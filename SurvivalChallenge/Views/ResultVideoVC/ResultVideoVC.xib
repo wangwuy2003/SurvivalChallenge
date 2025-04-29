@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ResultVideoVC" customModule="SurvivalChallenge" customModuleProvider="target">
+            <connections>
+                <outlet property="saveButton" destination="3e3-fA-faV" id="puK-pt-yRC"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="placeholder1" translatesAutoresizingMaskIntoConstraints="NO" id="1Nh-MQ-070">
+                    <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                </imageView>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="taL-Wt-GIQ" userLabel="Back Button">
+                    <rect key="frame" x="16" y="62" width="36" height="36"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="36" id="kB0-Uc-QRY"/>
+                        <constraint firstAttribute="width" constant="36" id="lrK-pB-qCo"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="back_btn_ic"/>
+                    <connections>
+                        <action selector="didTapBackBtn:" destination="-1" eventType="touchUpInside" id="hiW-AU-Uyc"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I53-mI-DGB" userLabel="Menu Button">
+                    <rect key="frame" x="341" y="62" width="36" height="36"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="36" id="BVK-A1-5y0"/>
+                        <constraint firstAttribute="width" constant="36" id="NQf-Cr-hc0"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="menu_ic"/>
+                    <connections>
+                        <action selector="didTapMenuBtn:" destination="-1" eventType="touchUpInside" id="8WJ-DM-Bgk"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3e3-fA-faV" customClass="InnerShadowButton" customModule="SurvivalChallenge" customModuleProvider="target">
+                    <rect key="frame" x="16" y="750" width="361" height="52"/>
+                    <color key="backgroundColor" red="0.30980392156862746" green="0.45882352941176469" blue="0.99607843137254903" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="52" id="zvQ-5s-edg"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" title=" Save" image="save_ic"/>
+                </button>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="1Nh-MQ-070" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="A69-k6-igB"/>
+                <constraint firstAttribute="bottom" secondItem="1Nh-MQ-070" secondAttribute="bottom" id="Cwt-wY-8wh"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="3e3-fA-faV" secondAttribute="trailing" constant="16" id="UVV-Sg-vJM"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="I53-mI-DGB" secondAttribute="trailing" constant="16" id="Y3J-q0-t8h"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="3e3-fA-faV" secondAttribute="bottom" constant="16" id="ZAE-4L-pjM"/>
+                <constraint firstItem="taL-Wt-GIQ" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="b3d-Ve-sYW"/>
+                <constraint firstItem="3e3-fA-faV" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="cvc-oA-kwS"/>
+                <constraint firstItem="1Nh-MQ-070" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="mNf-XY-Qvw"/>
+                <constraint firstItem="taL-Wt-GIQ" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="3" id="rH7-iK-4k7"/>
+                <constraint firstItem="I53-mI-DGB" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="3" id="se8-QH-xTa"/>
+                <constraint firstAttribute="trailing" secondItem="1Nh-MQ-070" secondAttribute="trailing" id="tgy-dY-l41"/>
+            </constraints>
+            <point key="canvasLocation" x="132" y="-11"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="back_btn_ic" width="36" height="36"/>
+        <image name="menu_ic" width="36" height="36"/>
+        <image name="placeholder1" width="375" height="746"/>
+        <image name="save_ic" width="24" height="24"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

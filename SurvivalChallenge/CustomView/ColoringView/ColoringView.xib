@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="ColoringView" customModule="SurvivalChallenge" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="451"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="target_ic" translatesAutoresizingMaskIntoConstraints="NO" id="z0V-PT-c7h">
+                    <rect key="frame" x="20" y="5" width="94" height="27"/>
+                </imageView>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="2Sa-aD-u1D" userLabel="Target Image View">
+                    <rect key="frame" x="16" y="41" width="100" height="100"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="100" id="Tmv-49-FML"/>
+                        <constraint firstAttribute="width" constant="100" id="cFE-cC-xVQ"/>
+                    </constraints>
+                </imageView>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="paint_1_image" translatesAutoresizingMaskIntoConstraints="NO" id="eJC-It-Juv" userLabel="Paint Image">
+                    <rect key="frame" x="96.666666666666686" y="164" width="200" height="200"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="200" id="a7w-fj-SNJ"/>
+                        <constraint firstAttribute="height" constant="200" id="cK3-HB-zwx"/>
+                    </constraints>
+                </imageView>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sX6-6T-zIG">
+                    <rect key="frame" x="306.66666666666669" y="239" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="EIG-eI-K9K"/>
+                        <constraint firstAttribute="width" constant="50" id="npV-jL-Z1U"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="paint_roller_right_ic"/>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dMT-xv-Zjn">
+                    <rect key="frame" x="36.666666666666664" y="239" width="49.999999999999993" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="T7S-2r-ThE"/>
+                        <constraint firstAttribute="width" constant="50" id="mk7-Ys-f5Y"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="paint_roller_left_ic"/>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qba-VU-6rA">
+                    <rect key="frame" x="171.66666666666666" y="374" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="50" id="etX-aJ-oCU"/>
+                        <constraint firstAttribute="height" constant="50" id="tP7-MC-5R7"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="paint_roller_bottom_ic"/>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rph-B3-pVb">
+                    <rect key="frame" x="171.66666666666666" y="104" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="7Bk-9E-i30"/>
+                        <constraint firstAttribute="width" constant="50" id="AnO-xY-PFZ"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="paint_roller_top_ic"/>
+                </button>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <constraints>
+                <constraint firstItem="Rph-B3-pVb" firstAttribute="centerX" secondItem="eJC-It-Juv" secondAttribute="centerX" id="29R-4Y-klh"/>
+                <constraint firstItem="dMT-xv-Zjn" firstAttribute="centerY" secondItem="eJC-It-Juv" secondAttribute="centerY" id="46s-av-TKg"/>
+                <constraint firstItem="2Sa-aD-u1D" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="16" id="Fd6-4S-RQz"/>
+                <constraint firstItem="qba-VU-6rA" firstAttribute="centerX" secondItem="eJC-It-Juv" secondAttribute="centerX" id="Ozd-T4-Ieq"/>
+                <constraint firstItem="sX6-6T-zIG" firstAttribute="leading" secondItem="eJC-It-Juv" secondAttribute="trailing" constant="10" id="PG6-MO-5HH"/>
+                <constraint firstItem="z0V-PT-c7h" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="20" id="Um4-bC-HTs"/>
+                <constraint firstItem="eJC-It-Juv" firstAttribute="top" secondItem="Rph-B3-pVb" secondAttribute="bottom" constant="10" id="YRs-Vr-cZs"/>
+                <constraint firstItem="2Sa-aD-u1D" firstAttribute="top" secondItem="z0V-PT-c7h" secondAttribute="bottom" constant="9" id="Zim-NE-K5z"/>
+                <constraint firstItem="sX6-6T-zIG" firstAttribute="centerY" secondItem="eJC-It-Juv" secondAttribute="centerY" id="cTK-lh-L2c"/>
+                <constraint firstItem="eJC-It-Juv" firstAttribute="top" secondItem="2Sa-aD-u1D" secondAttribute="bottom" constant="23" id="e7L-gN-KJH"/>
+                <constraint firstItem="qba-VU-6rA" firstAttribute="top" secondItem="eJC-It-Juv" secondAttribute="bottom" constant="10" id="keH-ia-gzT"/>
+                <constraint firstItem="eJC-It-Juv" firstAttribute="centerX" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="l2C-y1-EDk"/>
+                <constraint firstItem="z0V-PT-c7h" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="5" id="oni-OB-5S4"/>
+                <constraint firstItem="eJC-It-Juv" firstAttribute="leading" secondItem="dMT-xv-Zjn" secondAttribute="trailing" constant="10" id="rqP-PQ-ZPY"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="paintImageView" destination="eJC-It-Juv" id="8kX-Td-G7a"/>
+                <outlet property="targetImageView" destination="2Sa-aD-u1D" id="S5D-FA-mnq"/>
+            </connections>
+            <point key="canvasLocation" x="130.53435114503816" y="79.225352112676063"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="paint_1_image" width="500" height="500"/>
+        <image name="paint_roller_bottom_ic" width="100" height="100"/>
+        <image name="paint_roller_left_ic" width="100" height="100"/>
+        <image name="paint_roller_right_ic" width="100" height="100"/>
+        <image name="paint_roller_top_ic" width="100" height="100"/>
+        <image name="target_ic" width="94" height="27"/>
+    </resources>
+</document>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ResultVC" customModule="SurvivalChallenge" customModuleProvider="target">
+            <connections>
+                <outlet property="saveButton" destination="fxN-p8-fxo" id="m1h-ow-QqG"/>
+                <outlet property="shareButton" destination="fxN-p8-fxo" id="1Ah-60-bQe"/>
+                <outlet property="videoView" destination="hrm-wY-1tA" id="cCV-4l-n6c"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="SmB-RA-Dh8">
+                    <rect key="frame" x="16" y="746" width="361" height="52"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ogy-7T-i5u">
+                            <rect key="frame" x="0.0" y="0.0" width="172.66666666666666" height="52"/>
+                            <color key="backgroundColor" name="hex_FFA1A1"/>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <state key="normal" title="  Share" image="share_ic">
+                                <color key="titleColor" name="hex_212121"/>
+                            </state>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fxN-p8-fxo">
+                            <rect key="frame" x="188.66666666666663" y="0.0" width="172.33333333333337" height="52"/>
+                            <color key="backgroundColor" name="hex_4E75FF"/>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <state key="normal" title="  Save" image="save_ic">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </state>
+                        </button>
+                    </subviews>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="52" id="EPh-Bc-a1n"/>
+                    </constraints>
+                </stackView>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rM4-h2-Cdy">
+                    <rect key="frame" x="16" y="62" width="36" height="36"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="36" id="bmb-vs-gdo"/>
+                        <constraint firstAttribute="width" constant="36" id="ywB-tA-61f"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="back_btn_ic"/>
+                    <connections>
+                        <action selector="didTapBackBtn:" destination="-1" eventType="touchUpInside" id="lgF-aC-gbF"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uZd-54-yb9">
+                    <rect key="frame" x="341" y="62" width="36" height="36"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="36" id="h20-bX-pEf"/>
+                        <constraint firstAttribute="width" constant="36" id="iDq-A0-MyP"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="home_ic"/>
+                    <connections>
+                        <action selector="didTapHomeBtn:" destination="-1" eventType="touchUpInside" id="DIH-lO-ZzQ"/>
+                    </connections>
+                </button>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hrm-wY-1tA">
+                    <rect key="frame" x="56.666666666666657" y="125" width="280" height="448"/>
+                    <color key="backgroundColor" systemColor="systemBlueColor"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="280" id="Rc7-X6-DKK"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="SmB-RA-Dh8" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="7By-ei-6Kc"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="SmB-RA-Dh8" secondAttribute="bottom" constant="20" id="H8y-c7-qzB"/>
+                <constraint firstItem="uZd-54-yb9" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="3" id="Vvu-1r-8kg"/>
+                <constraint firstItem="rM4-h2-Cdy" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="ere-Oq-AzB"/>
+                <constraint firstItem="rM4-h2-Cdy" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="3" id="gQg-rU-bFT"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="SmB-RA-Dh8" secondAttribute="trailing" constant="16" id="nnR-mv-siO"/>
+                <constraint firstItem="hrm-wY-1tA" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="ohZ-kp-uGs"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="uZd-54-yb9" secondAttribute="trailing" constant="16" id="uNx-Fc-PSo"/>
+                <constraint firstItem="SmB-RA-Dh8" firstAttribute="top" secondItem="hrm-wY-1tA" secondAttribute="bottom" constant="173" id="vqK-aT-xgb"/>
+                <constraint firstItem="hrm-wY-1tA" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="66" id="z0M-jK-Obc"/>
+            </constraints>
+            <point key="canvasLocation" x="132" y="-11"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="back_btn_ic" width="36" height="36"/>
+        <image name="home_ic" width="36" height="36"/>
+        <image name="save_ic" width="24" height="24"/>
+        <image name="share_ic" width="24" height="24"/>
+        <namedColor name="hex_212121">
+            <color red="0.12941176470588237" green="0.12941176470588237" blue="0.12941176470588237" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="hex_4E75FF">
+            <color red="0.30588235294117649" green="0.45882352941176469" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="hex_FFA1A1">
+            <color red="1" green="0.63137254901960782" blue="0.63137254901960782" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemBlueColor">
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>

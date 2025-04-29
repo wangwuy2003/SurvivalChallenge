@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "State=On.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

@@ -1,0 +1,6 @@
+framework module MiTuKit {
+  umbrella header "MiTuKit-umbrella.h"
+
+  export *
+  module * { export * }
+}

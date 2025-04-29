@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="RankingView" customModule="SurvivalChallenge" customModuleProvider="target">
+            <connections>
+                <outlet property="collectionView" destination="yy7-zQ-81f" id="AAy-Ez-Hfc"/>
+                <outlet property="stackView" destination="nQr-3k-W2V" id="dFR-Dh-iI7"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="yy7-zQ-81f">
+                    <rect key="frame" x="58" y="152" width="62" height="561"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="LR9-nr-sCl">
+                        <size key="itemSize" width="128" height="128"/>
+                        <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                        <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                        <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    </collectionViewFlowLayout>
+                </collectionView>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="nQr-3k-W2V">
+                    <rect key="frame" x="133" y="152" width="40" height="561"/>
+                    <subviews>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="like_ic" translatesAutoresizingMaskIntoConstraints="NO" id="bBP-ce-1DH">
+                            <rect key="frame" x="0.0" y="0.0" width="40" height="41.666666666666664"/>
+                        </imageView>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="like_ic" translatesAutoresizingMaskIntoConstraints="NO" id="IkN-5b-C8W">
+                            <rect key="frame" x="0.0" y="57.666666666666657" width="40" height="41.666666666666657"/>
+                        </imageView>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="like_ic" translatesAutoresizingMaskIntoConstraints="NO" id="ddv-vH-vuV">
+                            <rect key="frame" x="0.0" y="115.33333333333333" width="40" height="41.666666666666671"/>
+                        </imageView>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="like_ic" translatesAutoresizingMaskIntoConstraints="NO" id="QH7-1K-V5G">
+                            <rect key="frame" x="0.0" y="173" width="40" height="41.666666666666657"/>
+                        </imageView>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="like_ic" translatesAutoresizingMaskIntoConstraints="NO" id="rBH-wk-gwv">
+                            <rect key="frame" x="0.0" y="230.66666666666669" width="40" height="42"/>
+                        </imageView>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dislike_ic" translatesAutoresizingMaskIntoConstraints="NO" id="262-Vc-mg7">
+                            <rect key="frame" x="0.0" y="288.66666666666669" width="40" height="41.666666666666686"/>
+                        </imageView>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dislike_ic" translatesAutoresizingMaskIntoConstraints="NO" id="Ob1-Nr-yKF">
+                            <rect key="frame" x="0.0" y="346.33333333333331" width="40" height="41.666666666666686"/>
+                        </imageView>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dislike_ic" translatesAutoresizingMaskIntoConstraints="NO" id="gRw-aI-uZR">
+                            <rect key="frame" x="0.0" y="404" width="40" height="41.666666666666686"/>
+                        </imageView>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dislike_ic" translatesAutoresizingMaskIntoConstraints="NO" id="fDX-Ca-AcN">
+                            <rect key="frame" x="0.0" y="461.66666666666663" width="40" height="41.666666666666686"/>
+                        </imageView>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dislike_ic" translatesAutoresizingMaskIntoConstraints="NO" id="3gD-h7-Zqo">
+                            <rect key="frame" x="0.0" y="519.33333333333337" width="40" height="41.666666666666629"/>
+                        </imageView>
+                    </subviews>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="40" id="y6I-tv-P4s"/>
+                    </constraints>
+                </stackView>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="nQr-3k-W2V" secondAttribute="trailing" constant="220" id="0Ny-V5-dkz"/>
+                <constraint firstItem="yy7-zQ-81f" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="58" id="77q-gx-XEy"/>
+                <constraint firstItem="yy7-zQ-81f" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="93" id="Rit-zS-fIj"/>
+                <constraint firstItem="nQr-3k-W2V" firstAttribute="leading" secondItem="yy7-zQ-81f" secondAttribute="trailing" constant="13" id="SrB-jf-NlP"/>
+                <constraint firstItem="nQr-3k-W2V" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="93" id="h1x-Is-JPk"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="nQr-3k-W2V" secondAttribute="bottom" constant="105" id="hI6-gg-r5g"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="yy7-zQ-81f" secondAttribute="bottom" constant="105" id="jJh-6M-LpG"/>
+            </constraints>
+            <point key="canvasLocation" x="-65.648854961832058" y="-105.63380281690141"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="dislike_ic" width="40" height="40"/>
+        <image name="like_ic" width="40" height="40"/>
+    </resources>
+</document>

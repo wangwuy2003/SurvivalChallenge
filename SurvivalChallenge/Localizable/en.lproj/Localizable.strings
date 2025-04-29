@@ -1,0 +1,39 @@
+// Intro
+"intro1" = "Interesting rankings";
+"intro2" = "Guess your favorite character";
+"intro3" = "Extremely challenging choice";
+
+// TabBar
+"home" = "Home";
+"myVideos" = "My Videos";
+
+// Home
+"survivalChallenge" = "SURVIVAL CHALLENGE";
+"hot" = "Hot";
+"ranking" = "Ranking";
+"guess" = "Guess";
+"coloring" = "Coloring";
+
+// Setting
+"setting" = "Setting";
+"language" = "Language";
+"privacyPolicy" = "Privacy Policy";
+"termOfUse" = "Term Of Use";
+
+// MyVideos
+"myVideos" = "My Videos";
+"share" = "Share";
+"delete" = "Delete";
+"deleteYourVideo" = "Delete your video?";
+"cancel" = "Cancel";
+
+// Video
+"save" = "Save";
+
+// Camera
+"addMusic" = "Add Music";
+"progressReachedTheLimit" = "Progress reached the limit";
+
+// DescriptionChallenge
+"tryNow" = "Try Now";
+
