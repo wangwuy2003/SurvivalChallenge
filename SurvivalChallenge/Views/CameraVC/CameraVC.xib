@@ -11,18 +11,22 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CameraVC" customModule="SurvivalChallenge" customModuleProvider="target">
             <connections>
+                <outlet property="backButton" destination="N8t-9n-ne3" id="v2o-kv-2mO"/>
                 <outlet property="cameraButton" destination="j3a-dN-V7v" id="E93-RS-q7H"/>
                 <outlet property="closeMusic" destination="5Fo-9p-sDk" id="GmY-Z8-ge7"/>
                 <outlet property="discardButton" destination="7cg-Tk-MsP" id="Jxy-Ck-fnv"/>
                 <outlet property="filterView" destination="IAj-we-fbb" id="HWb-Lo-9WY"/>
                 <outlet property="flashButton" destination="uuO-m4-dBx" id="GcF-Yh-Sxs"/>
                 <outlet property="guessView" destination="M5v-im-rRI" id="Gja-1Y-lBb"/>
+                <outlet property="lightningButton" destination="uuO-m4-dBx" id="ELS-5N-1MI"/>
+                <outlet property="magicButtonn" destination="J3t-F5-Ts2" id="6tS-xf-fMp"/>
                 <outlet property="musicLabel" destination="RnG-YW-bWZ" id="27W-s4-SJV"/>
                 <outlet property="musicLabelTrailingToCloseMusic" destination="oUG-jk-Xhx" id="xyf-fO-wzG"/>
                 <outlet property="musicLabelTrailingToSuperView" destination="2Ru-mj-mX1" id="9zW-4k-gmN"/>
                 <outlet property="musicView" destination="uJw-rO-LP0" id="po0-JJ-Z8B"/>
                 <outlet property="rankingView" destination="o5k-vy-v5F" id="naW-us-XhA"/>
                 <outlet property="saveButton" destination="iZ4-Dk-eLf" id="qu2-g8-NGs"/>
+                <outlet property="swapCamera" destination="qGJ-U1-gXc" id="9qL-eU-JK4"/>
                 <outlet property="timeLB" destination="HVN-r5-Wyn" id="ZhH-gd-vpc"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>

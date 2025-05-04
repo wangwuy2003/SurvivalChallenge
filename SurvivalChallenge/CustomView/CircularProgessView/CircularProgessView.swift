@@ -245,6 +245,37 @@ class CircularProgressView: UIView, CAAnimationDelegate {
         currentTimeInSeconds = recordedDurations.reduce(0, +)
         onTimeUpdated?(currentTimeInSeconds)
     }
+    
+    func discardAllSegment() {
+        for marker in pauseMarkers {
+            marker.removeFromSuperlayer()
+        }
+        pauseMarkers.removeAll()
+        
+        progressLayer.removeAllAnimations()
+        
+        let currentProgress = progressLayer.presentation()?.strokeEnd ?? progressLayer.strokeEnd
+        
+        let animation = CABasicAnimation(keyPath: "strokeEnd")
+        animation.fromValue = currentProgress
+        animation.toValue = 0
+        animation.duration = 0.25
+        animation.fillMode = .forwards
+        animation.isRemovedOnCompletion = false
+        
+        progressLayer.add(animation, forKey: "resetToZero")
+        
+        pausedProgressValues = [0]
+        recordedDurations.removeAll()
+        currentTimeInSeconds = 0.0
+        
+        onTimeUpdated?(currentTimeInSeconds)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+            self.progressLayer.strokeEnd = 0
+            self.onReset?()
+        }
+    }
 
     private func expandToCircle() {
         UIView.animate(withDuration: 0.25) {

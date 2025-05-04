@@ -10,4 +10,5 @@ extension Notification.Name {
     static let didPlayMusic = Notification.Name("didPlayMusic")
     static let didSaveVideo = Notification.Name("didSaveVideo")
     static let didChangeLanguage = Notification.Name("didChangeLanguage")
+    static let didReturnToHomeFromResult = Notification.Name("didReturnToHomeFromResult")
 }

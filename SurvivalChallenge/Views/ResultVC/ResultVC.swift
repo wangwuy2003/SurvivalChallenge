@@ -100,6 +100,7 @@ class ResultVC: UIViewController {
         let okAction = UIAlertAction(
             title: Localized.Result.discard,
             style: .destructive) { [weak self] _ in
+                NotificationCenter.default.post(name: .didReturnToHomeFromResult, object: nil)
                 self?.navigationController?.popToRootViewController(animated: false)
         }
         

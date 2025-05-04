@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="ipad7_9" orientation="portrait" layout="fullscreen" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="HomeCollectionViewCell" customModule="SurvivalChallenge" customModuleProvider="target"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="homeCell" id="gTV-IL-0wX" customClass="HomeCollectionViewCell" customModule="SurvivalChallenge" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="305" height="407"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="305" height="407"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="a4l-Hd-nft" userLabel="container">
+                        <rect key="frame" x="0.0" y="0.0" width="305" height="407"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="placeholder" translatesAutoresizingMaskIntoConstraints="NO" id="F1f-xH-Isq">
+                                <rect key="frame" x="8" y="8" width="289" height="290"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="196" id="08c-zt-wRb">
+                                        <variation key="heightClass=regular-widthClass=regular" constant="290"/>
+                                    </constraint>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="8"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label Here" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iAq-Z8-Cgy">
+                                <rect key="frame" x="8" y="306" width="289" height="21"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
+                                <color key="textColor" red="0.12941176469999999" green="0.12941176469999999" blue="0.12941176469999999" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Eiq-AS-Iz6">
+                                <rect key="frame" x="8" y="335" width="289" height="16"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                <color key="textColor" red="0.12941176469999999" green="0.12941176469999999" blue="0.12941176469999999" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="iAq-Z8-Cgy" firstAttribute="leading" secondItem="a4l-Hd-nft" secondAttribute="leading" constant="8" id="9Kp-zu-QBd"/>
+                            <constraint firstAttribute="trailing" secondItem="iAq-Z8-Cgy" secondAttribute="trailing" constant="8" id="GMG-I6-cBq"/>
+                            <constraint firstItem="F1f-xH-Isq" firstAttribute="leading" secondItem="a4l-Hd-nft" secondAttribute="leading" constant="8" id="OFG-Sg-Ebe"/>
+                            <constraint firstItem="iAq-Z8-Cgy" firstAttribute="top" secondItem="F1f-xH-Isq" secondAttribute="bottom" constant="8" id="QGW-yy-N3F"/>
+                            <constraint firstAttribute="trailing" secondItem="Eiq-AS-Iz6" secondAttribute="trailing" constant="8" id="TBX-gU-GCq"/>
+                            <constraint firstItem="Eiq-AS-Iz6" firstAttribute="top" secondItem="iAq-Z8-Cgy" secondAttribute="bottom" constant="8" id="c1T-Az-Ag0"/>
+                            <constraint firstAttribute="trailing" secondItem="F1f-xH-Isq" secondAttribute="trailing" constant="8" id="qxL-yG-s2N"/>
+                            <constraint firstItem="F1f-xH-Isq" firstAttribute="top" secondItem="a4l-Hd-nft" secondAttribute="top" constant="8" id="rxa-c5-4Qx"/>
+                            <constraint firstItem="Eiq-AS-Iz6" firstAttribute="leading" secondItem="a4l-Hd-nft" secondAttribute="leading" constant="8" id="tSS-Pz-0jI"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="12"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                <color key="value" red="0.12941176470588234" green="0.12941176470588234" blue="0.12941176470588234" alpha="1" colorSpace="calibratedRGB"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                <real key="value" value="2"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </view>
+                </subviews>
+            </view>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="a4l-Hd-nft" secondAttribute="bottom" id="24f-GK-rLV"/>
+                <constraint firstItem="a4l-Hd-nft" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="QFl-7g-Qk7"/>
+                <constraint firstAttribute="trailing" secondItem="a4l-Hd-nft" secondAttribute="trailing" id="Vrz-wN-ATw"/>
+                <constraint firstItem="a4l-Hd-nft" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="gIG-fc-Dog"/>
+            </constraints>
+            <size key="customSize" width="305" height="407"/>
+            <connections>
+                <outlet property="containerView" destination="a4l-Hd-nft" id="PkK-G4-Nht"/>
+                <outlet property="descriptionLabel" destination="Eiq-AS-Iz6" id="lxf-O4-u7u"/>
+                <outlet property="imageView" destination="F1f-xH-Isq" id="aEr-uW-pzU"/>
+                <outlet property="titleLabel" destination="iAq-Z8-Cgy" id="QGg-w3-Y5a"/>
+            </connections>
+            <point key="canvasLocation" x="333.58778625954199" y="146.12676056338029"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <image name="placeholder" width="164" height="242"/>
+    </resources>
+</document>

@@ -91,7 +91,7 @@ extension HomeVC {
     func setupCollectionView() {
         collectionView.delegate = self
         collectionView.dataSource = self
-        collectionView.register(UINib(nibName: "ChallengeCell", bundle: nil), forCellWithReuseIdentifier: "ChallengeCell")
+        collectionView.register(UINib(nibName: "HomeCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "homeCell")
         collectionView.backgroundColor = .white
     }
     
@@ -189,15 +189,12 @@ extension HomeVC: UICollectionViewDataSource, UICollectionViewDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ChallengeCell", for: indexPath) as? ChallengeCell else {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "homeCell", for: indexPath) as? HomeCollectionViewCell else {
             return UICollectionViewCell()
         }
         
-        let challenge = HomeViewModel.shared.challengeFilter(at: indexPath.item)
-        print("Challenge data for cell \(indexPath.item):")
-        print("  - Username: \(challenge.username)")
-        print("  - Description: \(challenge.textDes)")
-        cell.configure(with: challenge)
+        let challenge = HomeViewModel.shared.allChallenges[indexPath.item]
+        cell.configureCell(model: challenge)
         return cell
     }
     

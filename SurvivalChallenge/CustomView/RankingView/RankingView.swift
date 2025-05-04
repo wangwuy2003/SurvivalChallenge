@@ -5,7 +5,7 @@ import CoreImage
 
 protocol RankingViewDelegate: AnyObject {
     func didSelectRankingCell(at index: Int, image: UIImage?, imageURL: String?)
-    func didStartRecording() // Thêm để thông báo khi bắt đầu ghi hình
+    func didStartRecording()
 }
 
 class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
@@ -21,7 +21,6 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     private let previewImageView = UIImageView()
     
-    // Thêm imageOverlayView để hiển thị ảnh ở giữa màn hình
     private let imageOverlayView = UIImageView()
     
     private var imageURLs: [String] = []
@@ -29,8 +28,8 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     private var currentImage: UIImage?
     private var currentImageURL: String?
     private var randomTimer: Timer?
-    private var isRecording = false // Thêm biến trạng thái ghi hình
-    private var isRandomizing = false // Trạng thái đang random
+    private var isRecording = false
+    private var isRandomizing = false
     
     private var isActive = false
     
@@ -135,7 +134,7 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     func activate() {
         isActive = true
-        startContinuousRandomization() // Bắt đầu random liên tục khi view active
+        startContinuousRandomization()
     }
     
     func deactivate() {
@@ -150,11 +149,10 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         }
     }
     
-    // Phương thức để bắt đầu ghi hình
     func startRecording() {
         isRecording = true
-        stopRandomization() // Dừng random liên tục
-        startLimitedRandomization() // Bắt đầu random có giới hạn
+        stopRandomization()
+        startLimitedRandomization()
     }
     
     // Phương thức để dừng ghi hình
@@ -221,7 +219,7 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         DispatchQueue.main.async { [weak self] in
             self?.collectionView?.reloadData()
             if !self!.isRecording {
-                self?.startContinuousRandomization() // Chỉ bắt đầu random liên tục nếu không đang ghi hình
+                self?.startContinuousRandomization()
             }
         }
     }
