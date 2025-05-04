@@ -17,11 +17,7 @@ class FilterModeView: UIView {
     
     weak var delegate: FilterModeDelegate?
     
-    var challenges: [SurvivalChallengeEntity] = [] {
-        didSet {
-            collectionView.reloadData()
-        }
-    }
+    var challenges: [SurvivalChallengeEntity] = HomeViewModel.shared.allChallenges
     
     deinit {
         print("⚙️ deinit \(Self.self)")

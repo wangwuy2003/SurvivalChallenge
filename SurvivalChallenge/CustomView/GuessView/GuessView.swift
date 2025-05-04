@@ -1,29 +1,24 @@
-//
-//  GuessView.swift
-//  SurvivalChallenge
-//
-//  Created by Apple on 21/4/25.
-//
-
 import UIKit
 import Stevia
 import AVFoundation
 import MLKitFaceDetection
 import MLKit
 import SDWebImage
+import CoreImage
 
 class GuessView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
+    @IBOutlet var contentView: UIView!
     @IBOutlet weak var meView: UIView!
     @IBOutlet weak var myBoyView: UIView!
     @IBOutlet weak var meImage: UIImageView!
     @IBOutlet weak var myBoyImage: UIImageView!
+    @IBOutlet weak var contentImageView: UIView!
     
     var designType: DesignType = .guessType
     
     private var session: AVCaptureSession?
     private var videoOutput: AVCaptureVideoDataOutput?
     private var isUsingFrontCamera = true
-    private var previewLayer: AVCaptureVideoPreviewLayer?
     
     private var detectionLayer: CALayer?
     private var scanningLineLayer: CALayer?
@@ -35,6 +30,9 @@ class GuessView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     private var isProcessing = false
     
     private let videoQueue = DispatchQueue(label: "com.nhanhoo.guess.videoQueue", qos: .userInteractive)
+    private let ciContext = CIContext(options: [.useSoftwareRenderer: false])
+    
+    private let previewImageView = UIImageView()
     
     // MARK: - Initialization
     override func awakeFromNib() {
@@ -45,29 +43,27 @@ class GuessView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        print("yolo GuessView init(frame:) called")
-        loadFromNib()
+        loadFileXib()
         setupView()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        print("yolo GuessView init(coder:) called")
+        loadFileXib()
+        setupView()
     }
     
     deinit {
         deactivate()
-        print("⚙️ deicanit \(Self.self)")
+        print("⚙️ deinit (Self.self)")
     }
     
     // MARK: - Setup
-    private func loadFromNib() {
-        // Load view từ nib với owner là nil (không phải GuessView)
-        if let contentView = Bundle.main.loadNibNamed("GuessView", owner: nil, options: nil)?.first as? UIView {
-            contentView.frame = bounds
-            contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            addSubview(contentView)
-        }
+    func loadFileXib() {
+        Bundle.main.loadNibNamed("GuessView", owner: self, options: nil)
+        self.addSubview(contentView)
+        contentView.frame = self.bounds
+        contentView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
     }
     
     func setupView() {
@@ -79,6 +75,28 @@ class GuessView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             myBoyView.borderColor = .hexED0384
             myBoyView.borderWidth = 4
         }
+        
+        // Setup preview image view
+        previewImageView.contentMode = .scaleAspectFill
+        previewImageView.clipsToBounds = true
+        
+        // Insert preview image view at index 0 (bottom-most position)
+        insertSubview(previewImageView, at: 0)
+        previewImageView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            previewImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            previewImageView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            previewImageView.topAnchor.constraint(equalTo: topAnchor),
+            previewImageView.bottomAnchor.constraint(equalTo: bottomAnchor)
+        ])
+        
+        if let contentView = contentView {
+            bringSubviewToFront(contentView)
+        }
+        
+        if let contentImageView = contentImageView {
+            bringSubviewToFront(contentImageView)
+        }
     }
     
     // MARK: - Public Methods
@@ -88,55 +106,34 @@ class GuessView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     func deactivate() {
         isActive = false
-        // Dừng xử lý và giải phóng tài nguyên
         if let videoOutput = videoOutput {
             videoOutput.setSampleBufferDelegate(nil, queue: nil)
         }
         stopScanning()
         session = nil
         videoOutput = nil
+        DispatchQueue.main.async {
+            self.previewImageView.image = nil
+        }
     }
     
     func setPreviewSession(_ session: AVCaptureSession?, _ isFrontCamera: Bool) {
-        // Chỉ thiết lập nếu cần thiết
-        guard let session = session, window != nil else {
-            print("yolo \(self) setPreviewSession failed: session nil or window nil")
-            return
-        }
-        
-        print("yolo \(self) setPreviewSession starting")
-        
-        // Đánh dấu view đang xử lý
-        isProcessing = true
-        
-        // Xóa delegate cũ
-        if let existingOutput = videoOutput {
-            existingOutput.setSampleBufferDelegate(nil, queue: nil)
-            if self.session != nil {
-                self.session?.removeOutput(existingOutput)
-            }
-        }
-        
-        // Đặt lại tham chiếu
+        guard let session = session else { return }
         self.session = session
         self.isUsingFrontCamera = isFrontCamera
         
-        // Thiết lập output với delay để tránh race condition
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-            guard let self = self, self.window != nil else { return }
-            
-            let output = AVCaptureVideoDataOutput()
-            output.setSampleBufferDelegate(self, queue: self.videoQueue)
-            
-            if session.canAddOutput(output) {
-                session.addOutput(output)
-                self.videoOutput = output
-                self.isProcessing = false
-                print("yolo \(self) setPreviewSession completed successfully")
-                self.activate() // Đảm bảo kích hoạt view
-            } else {
-                print("yolo \(self) failed to add output to session")
-            }
+        isProcessing = true
+        
+        if let existingOutput = videoOutput {
+            session.removeOutput(existingOutput)
+        }
+        
+        let output = AVCaptureVideoDataOutput()
+        output.setSampleBufferDelegate(self, queue: videoQueue)
+        
+        if session.canAddOutput(output) {
+            session.addOutput(output)
+            videoOutput = output
         }
     }
     
@@ -148,16 +145,15 @@ class GuessView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         
         guessImageURLs.me = challenge.imgOptionUrl.filter { $0.contains("/Nu/") }
         guessImageURLs.myBoy = challenge.imgOptionUrl.filter { $0.contains("/Nam/") }
-        print("yolo Guess filter - Female images: \(guessImageURLs.me.count), Male images: \(guessImageURLs.myBoy.count) for challenge: \(challenge.name)")
+        print("yolo Guess filter - Female images: (guessImageURLs.me.count), Male images: (guessImageURLs.myBoy.count) for challenge: (challenge.name)")
         
-        // Preload images
         for url in guessImageURLs.me + guessImageURLs.myBoy {
             if let url = URL(string: url) {
                 SDWebImageDownloader.shared.downloadImage(with: url, options: [.preloadAllFrames, .scaleDownLargeImages], progress: nil) { (image, _, error, _) in
                     if let error = error {
-                        print("Failed to preload image \(url): \(error.localizedDescription)")
+                        print("Failed to preload image (url): (error.localizedDescription)")
                     } else {
-                        print("Preloaded image: \(url)")
+                        print("Preloaded image: (url)")
                     }
                 }
             }
@@ -180,7 +176,6 @@ class GuessView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     // MARK: - UI Methods
     func resetImages() {
-        // Kiểm tra nil trước khi truy cập
         if let meImage = meImage, let myBoyImage = myBoyImage {
             meImage.image = UIImage(named: "squidgame")
             myBoyImage.image = UIImage(named: "squidgame")
@@ -191,13 +186,11 @@ class GuessView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     }
     
     func setImages(meUrl: String?, myBoyUrl: String?) {
-        // Kiểm tra nil trước khi truy cập
         guard let meImage = meImage, let myBoyImage = myBoyImage else {
             print("Error: Image views are nil in setImages")
             return
         }
         
-        // Đặt ảnh mặc định
         let defaultImage = UIImage(named: "squidgame")
         meImage.image = defaultImage
         myBoyImage.image = defaultImage
@@ -205,9 +198,9 @@ class GuessView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         if let meUrl = meUrl, let url = URL(string: meUrl) {
             meImage.sd_setImage(with: url, placeholderImage: defaultImage) { [weak self] (image, error, _, _) in
                 if let error = error {
-                    print("yolo Failed to load meImage: \(error.localizedDescription)")
+                    print("yolo Failed to load meImage: (error.localizedDescription)")
                 } else {
-                    print("yolo Loaded meImage: \(meUrl)")
+                    print("yolo Loaded meImage: (meUrl)")
                     self?.meImage?.alpha = 0
                     UIView.animate(withDuration: 0.3) {
                         self?.meImage?.alpha = 1
@@ -219,9 +212,9 @@ class GuessView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         if let myBoyUrl = myBoyUrl, let url = URL(string: myBoyUrl) {
             myBoyImage.sd_setImage(with: url, placeholderImage: defaultImage) { [weak self] (image, error, _, _) in
                 if let error = error {
-                    print("yolo Failed to load myBoyImage: \(error.localizedDescription)")
+                    print("yolo Failed to load myBoyImage: (error.localizedDescription)")
                 } else {
-                    print("yolo Loaded myBoyImage: \(myBoyUrl)")
+                    print("yolo Loaded myBoyImage: (myBoyUrl)")
                     self?.myBoyImage?.alpha = 0
                     UIView.animate(withDuration: 0.3) {
                         self?.myBoyImage?.alpha = 1
@@ -233,12 +226,21 @@ class GuessView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     // MARK: - Face Detection
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        // Kiểm tra view có hoạt động không
         guard isActive, let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
         
         let imageWidth = CGFloat(CVPixelBufferGetWidth(pixelBuffer))
         let imageHeight = CGFloat(CVPixelBufferGetHeight(pixelBuffer))
         let imageSize = CGSize(width: imageWidth, height: imageHeight)
+        
+        // Convert sample buffer to UIImage for preview
+        let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+        let orientedImage = isUsingFrontCamera ? ciImage.oriented(.leftMirrored) : ciImage.oriented(.right)
+        if let cgImage = ciContext.createCGImage(orientedImage, from: orientedImage.extent) {
+            let uiImage = UIImage(cgImage: cgImage)
+            DispatchQueue.main.async { [weak self] in
+                self?.previewImageView.image = uiImage
+            }
+        }
         
         let visionImage = VisionImage(buffer: sampleBuffer)
         visionImage.orientation = imageOrientation()
@@ -279,7 +281,7 @@ class GuessView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             guard let self = self, self.isActive, self.window != nil else { return }
             
             if let error = error {
-                print("Lỗi khi nhận diện khuôn mặt: \(error.localizedDescription)")
+                print("Lỗi khi nhận diện khuôn mặt: (error.localizedDescription)")
                 return
             }
             
@@ -293,7 +295,7 @@ class GuessView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
                 return
             }
             
-            print("Found \(faces.count) face(s)")
+            print("Found (faces.count) face(s)")
             DispatchQueue.main.async {
                 for face in faces {
                     self.handleGuessFaceDetection(face, imageSize: imageSize)
@@ -303,24 +305,34 @@ class GuessView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     }
     
     private func handleGuessFaceDetection(_ face: Face, imageSize: CGSize) {
-        guard let previewLayer = previewLayer else {
-            print("Preview layer not initialized")
-            return
-        }
+        let faceFrame = convertToViewCoordinates(face.frame, imageSize: imageSize)
         
-        let faceFrame = previewLayer.layerRectConverted(fromCaptureDeviceRect: face.frame, imageSize: imageSize)
-        
-        // Chỉ start scanning nếu chưa scan và có khuôn mặt hợp lệ
-        if !isScanning && !hasCompletedGuess && faceFrame.width > 50 { // Ngưỡng kích thước tối thiểu
+        if !isScanning && !hasCompletedGuess && faceFrame.width > 50 {
             startScanning(faceFrame: faceFrame)
         }
         
-        // Xóa mọi layer không phải scanning line
         detectionLayer?.sublayers?.forEach {
             if $0 != scanningLineLayer {
                 $0.removeFromSuperlayer()
             }
         }
+    }
+    
+    private func convertToViewCoordinates(_ rect: CGRect, imageSize: CGSize) -> CGRect {
+        let normalizedX = rect.origin.x / imageSize.width
+        let normalizedY = rect.origin.y / imageSize.height
+        let normalizedWidth = rect.width / imageSize.width
+        let normalizedHeight = rect.height / imageSize.height
+        
+        let viewWidth = bounds.width
+        let viewHeight = bounds.height
+        
+        return CGRect(
+            x: normalizedX * viewWidth,
+            y: (1 - normalizedY - normalizedHeight) * viewHeight,
+            width: normalizedWidth * viewWidth,
+            height: normalizedHeight * viewHeight
+        )
     }
     
     private func setupDetectionLayer() {
@@ -334,7 +346,7 @@ class GuessView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         layer.addSublayer(detectionLayer!)
         
         setupScanningLine()
-        print("Detection layer initialized with dimensions: \(detectionLayer?.frame ?? .zero)")
+        print("Detection layer initialized with dimensions: (detectionLayer?.frame ?? .zero)")
     }
     
     private func setupScanningLine() {
@@ -354,7 +366,7 @@ class GuessView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     private func startScanning(faceFrame: CGRect) {
         guard !isScanning, !hasCompletedGuess, isActive else {
-            print("yolo Scanning not started: isScanning=\(isScanning), hasCompletedGuess=\(hasCompletedGuess)")
+            print("yolo Scanning not started: isScanning=(isScanning), hasCompletedGuess=(hasCompletedGuess)")
             return
         }
         isScanning = true
@@ -396,7 +408,6 @@ class GuessView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         
         setImages(meUrl: selectedGuessImages.me, myBoyUrl: selectedGuessImages.myBoy)
         hasCompletedGuess = true
-        print("yolo Selected guess images - Female: \(selectedGuessImages.me ?? "none"), Male: \(selectedGuessImages.myBoy ?? "none")")
     }
 }
 

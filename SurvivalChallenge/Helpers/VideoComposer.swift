@@ -693,6 +693,21 @@ final class VideoComposer {
         }
     }
     
+    /// Xóa tất cả các segments
+    func clearSegments() {
+        for url in videoSegments {
+            do {
+                try FileManager.default.removeItem(at: url)
+                print("⚙️ Removed segment: \(url.lastPathComponent)")
+            } catch {
+                print("⚠️ Failed to delete segment: \(error.localizedDescription)")
+            }
+        }
+        
+        videoSegments.removeAll()
+        print("✅ All segments cleared")
+    }
+    
     /// Hủy bỏ tất cả recordings
     func cancelAllRecordings() {
         // Dừng recording hiện tại nếu đang ghi

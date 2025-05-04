@@ -26,6 +26,7 @@
 "delete" = "Delete";
 "deleteYourVideo" = "Delete your video?";
 "cancel" = "Cancel";
+"emptyFolder" = "Empty Folder";
 
 // Video
 "save" = "Save";
@@ -36,4 +37,16 @@
 
 // DescriptionChallenge
 "tryNow" = "Try Now";
+
+// Result
+"share" = "Share";
+"save" = "Save";
+"discardYourVideo" = "Discard your video?";
+"cancel" = "Cancel";
+"discard" = "Discard";
+"success" = "Success";
+"videoSavedSuccessfully" = "Video saved successfully";
+"ok" = "OK";
+"error" = "Error";
+"videoSavedError" = "Video saved error";
 

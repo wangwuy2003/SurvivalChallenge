@@ -19,9 +19,7 @@ class HomeViewModel {
         }
     }
     
-    var audioItems: [SurvivalChallengeEntity] {
-        return allChallenges.filter { $0.category.lowercased() == "audio" }
-    }
+    var audioItems: [SurvivalChallengeEntity] = [] 
     
     var onDataUpdated: (() -> Void)?
     var onError: ((Error) -> Void)?
@@ -39,7 +37,8 @@ class HomeViewModel {
         Task {
             do {
                 let challenges = try await apiService.fetchSurvivalChallengeFilters()
-                allChallenges = challenges
+                allChallenges = challenges.filter { $0.category != "audio" }
+                audioItems = challenges.filter { $0.category == "audio" }
                 filterChallenges()
                 isLoading = false
                 onDataUpdated?()

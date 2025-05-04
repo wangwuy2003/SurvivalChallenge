@@ -15,21 +15,18 @@ import SDWebImage
 class CameraVC: UIViewController {
     @IBOutlet weak var rankingView: RankingView!
     @IBOutlet weak var guessView: GuessView!
-    @IBOutlet weak var bgCameraView: UIView!
-    @IBOutlet weak var addMusicBtn: UIButton!
     @IBOutlet weak var flashButton: UIButton!
-    @IBOutlet weak var selectMusicView: UIView!
-    @IBOutlet weak var musicTitleLB: UILabel!
-    @IBOutlet weak var deleteButton: UIButton!
+    @IBOutlet weak var musicView: UIView!
+    @IBOutlet weak var musicLabel: UILabel!
+    
+    @IBOutlet weak var closeMusic: UIButton!
     @IBOutlet weak var filterView: FilterModeView!
     @IBOutlet weak var cameraButton: UIView!
-    @IBOutlet weak var rightDeleteButtonConstraint: NSLayoutConstraint!
-    @IBOutlet weak var widthDeleteButtonConstraint: NSLayoutConstraint!
-    
     @IBOutlet weak var discardButton: UIButton!
     @IBOutlet weak var saveButton: UIButton!
     @IBOutlet weak var timeLB: UILabel!
-    
+    @IBOutlet weak var musicLabelTrailingToSuperView: NSLayoutConstraint!
+    @IBOutlet weak var musicLabelTrailingToCloseMusic: NSLayoutConstraint!
     private var progressView: CircularProgressView!
     
     var coloringView: ColoringView?
@@ -37,9 +34,8 @@ class CameraVC: UIViewController {
     var filterType: FilterType?
     var selectedChallenge: SurvivalChallengeEntity?
     var currentChallenge: SurvivalChallengeEntity?
+    var music: SurvivalChallengeEntity?
     
-    private var previewLayer: AVCaptureVideoPreviewLayer!
-    private lazy var musicView = MusicView()
     private lazy var overlayView = UIView()
     var isAccessCamera: Bool = false
     var challenges: [SurvivalChallengeEntity] = []
@@ -49,7 +45,7 @@ class CameraVC: UIViewController {
             updateMusicUI()
         }
     }
-
+    
     private var isInNaviStack = false
     private var isPop = false
     private var hasMusic = false
@@ -74,34 +70,27 @@ class CameraVC: UIViewController {
         super.viewDidLoad()
         setupViews()
         setupColoringView()
-        updateActiveView()
         setupTapGesture()
         setupCamera()
         setupVideoComposer()
         resetMusicSelection()
         setupHandles()
-        
-        let audioItems = HomeViewModel.shared.audioItems
-        print("yolo Audio items: \(audioItems)")
-        musicView.setAudioItems(audioItems)
-        
-        print("yolo Challenges received in CameraVC: \(challenges.count)")
-        filterView.challenges = challenges
+        setupAudio()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         checkCameraPermission()
-        resetState()
+//        resetState()
         
-        if isAccessCamera {
-            if !captureSession.isRunning {
-                DispatchQueue.global().async { [weak self] in
-                    guard let self = self else { return }
-                    startSession()
-                }
-            }
-        }
+//        if isAccessCamera {
+//            if !captureSession.isRunning {
+//                DispatchQueue.global().async { [weak self] in
+//                    guard let self = self else { return }
+//                    startSession()
+//                }
+//            }
+//        }
         
         if let selectedChallenge = selectedChallenge {
             if let index = challenges.firstIndex(where: { $0.id == selectedChallenge.id }) {
@@ -117,15 +106,18 @@ class CameraVC: UIViewController {
         }
         
         if isInNaviStack {
-            if hasMusic {
+            if music != nil {
                 audioQueue.async { [weak self] in
                     guard let self = self else { return }
                     audioPlayer?.play()
                 }
             }
             accumulatedTime = recordedTime
-            videoComposer?.validateSegments()
-            videoComposer?.resetComposer()
+            
+            if let videoComposer = self.videoComposer {
+                videoComposer.validateSegments()
+                videoComposer.resetComposer()
+            }
             
             if isFlashOn {
                 if isUsingFrontCamera {
@@ -136,6 +128,8 @@ class CameraVC: UIViewController {
                 }
             }
         }
+        
+        updateActiveView()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -146,21 +140,12 @@ class CameraVC: UIViewController {
                 stopSession()
             }
         }
+        stopAudio()
         clear()
     }
-        
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        if previewLayer != nil {
-            DispatchQueue.main.async { [weak self] in
-                guard let self else { return }
-                previewLayer.frame = bgCameraView.bounds
-            }
-        }
-    }
-    
-    @IBAction func didTapAddMusicBtn(_ sender: Any) {
-        isMusicViewVisible.toggle()
     }
     
     @IBAction func didTapBackBtn(_ sender: Any) {
@@ -173,15 +158,35 @@ class CameraVC: UIViewController {
         if wasRecording {
             pauseRecording()
         }
-            
+        
+        // Không ẩn/hiện view ở đây, chỉ chuyển đổi camera
         isUsingFrontCamera.toggle()
+        
+        // Tạm thời ẩn view đang hiển thị
+        let activeView = (filterType == .ranking) ? rankingView :
+        (filterType == .guess) ? guessView : coloringView
+        activeView?.alpha = 0  // Chỉ làm mờ không ẩn hoàn toàn
+        
+        // Thực hiện chuyển đổi camera
         setUpCaptureSessionInput()
         
-        // Đảm bảo các view được cập nhật session mới
-        updateRankingViewSession()
-        updateGuessViewSession()
-            
-            // Tiếp tục recording nếu trước đó đang recording
+        // Sau khi chuyển đổi xong, cập nhật session cho view đang hoạt động
+        // (không cần delay)
+        switch filterType {
+        case .ranking:
+            rankingView?.setPreviewSession(captureSession, isUsingFrontCamera)
+        case .guess:
+            guessView?.setPreviewSession(captureSession, isUsingFrontCamera)
+        default:
+            break
+        }
+        
+        // Hiển thị view trở lại với animation nhẹ
+        UIView.animate(withDuration: 0.2) {
+            activeView?.alpha = 1
+        }
+        
+        // Tiếp tục recording nếu trước đó đang recording
         if wasRecording {
             resumeRecording()
         }
@@ -214,10 +219,6 @@ class CameraVC: UIViewController {
         navigationController?.pushViewController(selectFilterVC, animated: false)
     }
     
-    @IBAction func didTapDeleteMusicBtn(_ sender: Any) {
-        resetMusicSelection()
-    }
-    
     @IBAction func didTapSaveBtn(_ sender: Any) {
         stopRecording()
     }
@@ -232,10 +233,25 @@ class CameraVC: UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
+    @IBAction func didTapCloseMusicBtn(_ sender: Any) {
+        hasMusic = false
+        music = nil
+        updateMusicView()
+        audioQueue.async { [weak self] in
+            guard let self else { return }
+            audioPlayer?.pause()
+        }
+    }
+    
     private func setupVideoComposer() {
         let width = 540
         let height = 960
         videoComposer = VideoComposer(width: width, height: height)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+        print("⚙️ deinit \(Self.self)")
     }
 }
 
@@ -248,6 +264,11 @@ extension CameraVC {
         timer?.invalidate()
         timer = nil
         recordingState = .notRecording
+        
+        if filterType == .ranking {
+                rankingView?.stopRecording()
+            }
+        
         rankingView?.resetState()
         guessView?.resetState()
         updateTimeLabel()
@@ -262,9 +283,98 @@ extension CameraVC {
     }
 }
 
+// MARK: - Audio
+extension CameraVC {
+    private func setupAudio() {
+        do {
+            let audioSession = AVAudioSession.sharedInstance()
+            try audioSession.setCategory(.playback, mode: .default)
+            try audioSession.setActive(true)
+        } catch {
+            print("Failed to set up audio session: \(error)")
+        }
+    }
+    
+    private func playAudio(with url: URL, music: SurvivalChallengeEntity) {
+        audioQueue.async { [weak self] in
+            guard let self = self else { return }
+            
+            let playerItem = AVPlayerItem(url: url)
+            
+            NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: nil)
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(audioDidFinishPlaying),
+                                                   name: .AVPlayerItemDidPlayToEndTime,
+                                                   object: playerItem)
+            
+            audioPlayer = AVPlayer(playerItem: playerItem)
+            audioPlayer?.play()
+            
+            DispatchQueue.main.async { [weak self] in
+                self?.hasMusic = true
+                self?.updateMusicView(music: music)
+            }
+        }
+    }
+    
+    private func updateMusicView(music: SurvivalChallengeEntity? = nil) {
+        if hasMusic {
+            musicLabel.text = music?.name
+            closeMusic.isHidden = false
+            musicLabelTrailingToSuperView.priority = UILayoutPriority(999)
+            musicLabelTrailingToCloseMusic.priority = UILayoutPriority(1000)
+        } else {
+            musicLabel.text = Localized.Camera.addMusic
+            closeMusic.isHidden = true
+            musicLabelTrailingToSuperView.priority = UILayoutPriority(1000)
+            musicLabelTrailingToCloseMusic.priority = UILayoutPriority(999)
+        }
+    }
+    
+    @objc private func audioDidFinishPlaying() {
+        audioQueue.async { [weak self] in
+            guard let self = self else { return }
+            self.audioPlayer?.seek(to: .zero)
+            self.audioPlayer?.play()
+        }
+    }
+    
+    @objc private func stopAudio() {
+        audioQueue.async { [weak self] in
+            guard let self = self else { return }
+            self.audioPlayer?.pause()
+            self.audioPlayer = nil
+        }
+    }
+    
+    private func getSelectedMusicURL(from music: SurvivalChallengeEntity?) async -> URL? {
+        guard let music = music,
+              let urlString = music.imageUrlNew.first,
+              let remoteURL = URL(string: urlString.url) else { return nil }
+        
+        let fileName = "\(music.category)_\(remoteURL.lastPathComponent)"
+        print("⚙️ File name: \(fileName)")
+        let localURL = FileHelper.shared.fileURL(fileName: fileName, in: .audiosCache)
+        print("⚙️ Local URL: \(localURL)")
+        
+        if FileHelper.shared.fileExists(fileName: fileName, in: .audiosCache) {
+            print("⚙️ File exists, using local file.")
+            return localURL
+        }
+        
+        do {
+            try await FileHelper.shared.downloadFile(from: remoteURL, to: localURL)
+            print("⚙️ Download done, using selected file.")
+            return localURL
+        } catch {
+            print("⚠️ Download audio failed: \(error)")
+            return nil
+        }
+    }
+}
+
 // MARK: - Functions
 extension CameraVC {
-    // MARK: - Handles
     private func setupHandles() {
         progressView.onCompletion = { [weak self] in
             guard let self else { return }
@@ -343,14 +453,14 @@ extension CameraVC {
     }
     
     private func updateUIWhenStartRecord() {
-        self.progressView.isHidden = false
-        self.progressView.alpha = 0
+        self.progressView?.isHidden = false
+        self.progressView?.alpha = 0
         self.timeLB.isHidden = false
         self.timeLB.alpha = 0
         UIView.animate(withDuration: 0.3, animations: {
             self.flashButton.alpha = 0
             self.filterView.alpha = 0
-            self.progressView.alpha = 1
+            self.progressView?.alpha = 1
             self.timeLB.alpha = 1
         }, completion: { _ in
             self.flashButton.isHidden = true
@@ -393,12 +503,12 @@ extension CameraVC {
         UIView.animate(withDuration: 0.3, animations: {
             self.flashButton.alpha = 1
             self.filterView.alpha = 1
-            self.progressView.alpha = 0
+            self.progressView?.alpha = 0
             self.discardButton.alpha = 0
             self.saveButton.alpha = 0
             self.timeLB.alpha = 0
         }, completion: { _ in
-            self.progressView.isHidden = true
+            self.progressView?.isHidden = true
             self.discardButton.isHidden = true
             self.saveButton.isHidden = true
             self.timeLB.isHidden = true
@@ -422,6 +532,7 @@ extension CameraVC {
         timeLB.text = String(format: "%02d:%02d", minutes, seconds)
     }
     
+    // MARK: - Start record
     private func startRecording() {
         guard recordingState == .notRecording else { return }
         
@@ -441,13 +552,14 @@ extension CameraVC {
         if let filterType = filterType {
             switch filterType {
             case .ranking:
+                rankingView.startRecording()
                 videoComposer.setEffectType(filterType, designType: designType, view: rankingView!)
             case .guess:
                 videoComposer.setEffectType(filterType, designType: designType, view: guessView!)
             case .coloring:
                 videoComposer.setEffectType(filterType, designType: designType, view: coloringView!)
             default:
-                videoComposer.setEffectType(.none, designType: nil, view: bgCameraView)
+                break
             }
         }
         
@@ -456,7 +568,7 @@ extension CameraVC {
         
         DispatchQueue.main.async {
             self.updateUIWhenStartRecord()
-            self.progressView.startProgress(duration: 60)
+            self.progressView?.startProgress(duration: 120)
         }
         
         audioQueue.async { [weak self] in
@@ -477,6 +589,7 @@ extension CameraVC {
         }
     }
     
+    // MARK: - Pause record
     private func pauseRecording() {
         if let startTime = self.startTime {
             accumulatedTime += Date().timeIntervalSince(startTime)
@@ -485,13 +598,24 @@ extension CameraVC {
         recordingState = .paused
         updateUIWhenPauseRecord()
         
+        if filterType == .ranking {
+            rankingView?.stopRecording()
+        }
+        
         videoComposer.pauseRecording()
         timer?.invalidate()
         timer = nil
     }
     
+    // MARK: - Resume record
     private func resumeRecording() {
         videoComposer.resumeRecording()
+        
+        
+        if filterType == .ranking {
+            rankingView?.startRecording()
+        }
+        
         startTime = Date()
         recordingState = .recording
         updateUIWhenResumeRecord()
@@ -504,10 +628,15 @@ extension CameraVC {
         }
     }
     
+    // MARK: - Stop record
     private func stopRecording() {
         timer?.invalidate()
         timer = nil
         recordingState = .paused
+        
+        if filterType == .ranking {
+            rankingView?.stopRecording()
+        }
         
         updateUIWhenPauseRecord()
         if !progressView.isPaused {
@@ -518,17 +647,30 @@ extension CameraVC {
         
         videoComposer.finalizeAndExportVideo { [weak self] url in
             Task {
-                guard let self = self, let videoUrl = url else {
-                    DispatchQueue.main.async {
+                guard let self = self,
+                      let videoUrl = url else {
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self else { return }
                         Utils.showAlertOK(title: "Error", message: "Failed to create video")
                         Utils.removeIndicator()
+                        
+                        progressView.discardLastSegment()
+                        videoComposer.clearSegments()
                     }
                     return
                 }
                 
                 Utils.removeIndicator()
                 let resultVC = ResultVC()
-                resultVC.videoURL = videoUrl
+                let selectedMusicURL = await self.getSelectedMusicURL(from: self.music)
+                
+                if let audioURL = selectedMusicURL {
+                    VideoComposer.mergeAudioWithVideo(videoURL: videoUrl, audioURL: audioURL, completion: { finalUrl in
+                        resultVC.videoURL = finalUrl
+                    })
+                } else {
+                    resultVC.videoURL = videoUrl
+                }
                 self.isInNaviStack = true
                 self.navigationController?.pushViewController(resultVC, animated: true)
             }
@@ -539,12 +681,7 @@ extension CameraVC {
 // MARK: - Helper Methods
 extension CameraVC {
     private func resetMusicSelection() {
-        musicTitleLB.text = Localized.Camera.addMusic
-        deleteButton.isHidden = true
-        rightDeleteButtonConstraint.constant = 0
-        widthDeleteButtonConstraint.constant = 0
-        musicView.stopAudio()
-        musicView.resetPlaybackState()
+        musicLabel.text = Localized.Camera.addMusic
     }
     
     private func updateRankingViewSession() {
@@ -567,14 +704,7 @@ extension CameraVC {
         filterView.delegate = self
         view.subviews {
             overlayView
-            musicView
         }
-        
-        musicView
-            .left(0)
-            .right(0)
-            .bottom(0)
-            .height(407)
         
         progressView = CircularProgressView()
         view.addSubview(progressView)
@@ -591,54 +721,15 @@ extension CameraVC {
         saveButton.isHidden = true
         timeLB.isHidden = true
         
-        musicView.style {
-            $0.backgroundColor = .white
-            $0.isHidden = true
-            $0.transform = CGAffineTransform(translationX: 0, y: $0.frame.height)
-            $0.layer.cornerRadius = 20
-            $0.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
-            $0.clipsToBounds = true
-            $0.delegate = self
-        }
-        
         overlayView.style {
             $0.backgroundColor = UIColor.black.withAlphaComponent(0.5)
             $0.fillContainer()
             $0.isHidden = true
         }
         
-        selectMusicView.style {
-            $0.clipsToBounds = true
-            $0.layer.cornerRadius = $0.frame.height / 2
-            $0.clipsToBounds = true
-            $0.layoutIfNeeded()
-        }
-        
-        musicTitleLB.style {
+        musicLabel.style {
             $0.font = UIFont.sfProDisplayBold(ofSize: 13)
             $0.textColor = .white
-        }
-        
-        addMusicBtn.style {
-            var config = UIButton.Configuration.borderedProminent()
-            config.baseBackgroundColor = .hex212121.withAlphaComponent(0.65)
-            config.baseForegroundColor = .white
-            config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
-                var outgoing = incoming
-                outgoing.font = UIFont.sfProDisplayBold(ofSize: 13)
-                return outgoing
-            }
-            config.contentInsets = NSDirectionalEdgeInsets(
-                top: 5,
-                leading: 0,
-                bottom: 5,
-                trailing: 0
-            )
-            config.cornerStyle = .capsule
-            
-            $0.configuration = config
-            $0.titleLabel?.text = Localized.Camera.addMusic
-            $0.clipsToBounds = true
         }
         
         cameraButton.style {
@@ -649,7 +740,7 @@ extension CameraVC {
             $0.isUserInteractionEnabled = true
         }
     }
-
+    
     // MARK: - Setup ColoringView
     func setupColoringView() {
         guard coloringView == nil else { return }
@@ -663,83 +754,46 @@ extension CameraVC {
         
         coloringView
             .fillHorizontally()
-        coloringView.Top == addMusicBtn.Bottom + 50
+        coloringView.top(200)
         coloringView.Bottom == filterView.Top - 10
         
         coloringView.isHidden = true
         print("ColoringView initialized")
     }
     
+    // MARK: - Update active view
     func updateActiveView() {
-        print("yolo Filter Type: \(String(describing: filterType)), Design Type: \(String(describing: designType))")
-        
-        // Deactivate all views first
-        rankingView?.deactivate()
-        guessView?.deactivate()
-        
-        // Hide all views first
         rankingView?.isHidden = true
         guessView?.isHidden = true
         coloringView?.isHidden = true
-        
-        // Làm trong suốt bgCameraView để phát hiện vấn đề
-        bgCameraView.backgroundColor = UIColor.clear
         
         guard let filterType = filterType else {
             print("No filter type selected.")
             return
         }
         
-        // Thêm log rõ ràng
-        print("yolo Activating filter: \(filterType)")
-        
-        // Đảm bảo previewLayer được cập nhật
-        if previewLayer != nil {
-            previewLayer.frame = bgCameraView.bounds
-        }
-        
         switch filterType {
         case .ranking:
-            print("yolo Showing RankingView")
-            rankingView?.isHidden = false
             if let designType = designType {
                 rankingView?.designType = designType
             }
-            
-            // Thêm delay để tránh race condition
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-                guard let self = self else { return }
-                print("yolo Setting RankingView session and activating")
-                self.rankingView?.setPreviewSession(self.captureSession, self.isUsingFrontCamera)
-                self.rankingView?.activate() // Đảm bảo kích hoạt view
-                if let challenge = self.currentChallenge {
-                    print("yolo Setting challenge for RankingView: \(challenge.name)")
-                    self.rankingView?.setChallenge(challenge)
-                } else {
-                    print("yolo Warning: No challenge available for RankingView")
-                }
+            if let challenge = currentChallenge {
+                rankingView?.setChallenge(challenge)
             }
             
+            rankingView?.setPreviewSession(captureSession, isUsingFrontCamera)
+            rankingView?.isHidden = false
+            rankingView?.activate()
         case .guess:
-            print("yolo Showing GuessView")
-            guessView?.isHidden = false
             if let designType = designType {
                 guessView?.designType = designType
             }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-                guard let self = self else { return }
-                print("yolo Setting GuessView session and activating")
-                self.guessView?.setPreviewSession(self.captureSession, self.isUsingFrontCamera)
-                self.guessView?.activate() // Đảm bảo kích hoạt view
-                if let challenge = self.currentChallenge {
-                    print("yolo Setting challenge for GuessView: \(challenge.name)")
-                    self.guessView?.setChallenge(challenge)
-                } else {
-                    print("yolo Warning: No challenge available for GuessView")
-                }
+            if let challenge = currentChallenge {
+                guessView?.setChallenge(challenge)
             }
-            
+            guessView?.setPreviewSession(captureSession, isUsingFrontCamera)
+            guessView?.isHidden = false
+            guessView?.activate()
         case .coloring:
             print("yolo Showing ColoringView")
             coloringView?.isHidden = false
@@ -751,7 +805,7 @@ extension CameraVC {
             print("No valid filter type.")
         }
         
-        view.layoutIfNeeded() // Buộc layout cập nhật
+        view.layoutIfNeeded()
         
         if videoComposer != nil {
             switch filterType {
@@ -762,7 +816,7 @@ extension CameraVC {
             case .coloring:
                 videoComposer.setEffectType(filterType, designType: designType, view: coloringView!)
             default:
-                videoComposer.setEffectType(filterType, designType: designType, view: bgCameraView)
+                break
             }
         }
     }
@@ -778,10 +832,11 @@ extension CameraVC {
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
         musicView.addGestureRecognizer(panGesture)
         
-        let selectMusicTapGesture = UITapGestureRecognizer(
-            target: self,
-            action: #selector(didTapSelectMusicView(_:)))
-        selectMusicView.addGestureRecognizer(selectMusicTapGesture)
+        let cameraButtonTapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapCameraButton(_:)))
+        cameraButton.addGestureRecognizer(cameraButtonTapGesture)
+        
+        let musicViewTapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapMusicView(_:)))
+        musicView.addGestureRecognizer(musicViewTapGesture)
     }
     
     @objc func handleTap(_ gesture: UIGestureRecognizer) {
@@ -792,13 +847,28 @@ extension CameraVC {
         }
     }
     
-    @objc func didTapSelectMusicView(_ gesture: UITapGestureRecognizer) {
-        // Check if the tap was within the bounds of the delete button
-        let tapLocation = gesture.location(in: selectMusicView)
-        if deleteButton.isHidden || !deleteButton.frame.contains(tapLocation) {
-            // If not on the delete button, toggle the music view visibility
-            isMusicViewVisible.toggle()
+    @objc func didTapCameraButton(_ gesture: UITapGestureRecognizer) {
+        switch recordingState {
+        case .notRecording:
+            startRecording()
+        case .recording:
+            pauseRecording()
+        case .paused:
+            resumeRecording()
         }
+    }
+    
+    @objc func didTapMusicView(_ gesture: UITapGestureRecognizer) {
+        let musicVC = MusicViewController()
+        musicVC.delegate = self
+        musicVC.presentationController?.delegate = self
+        if let sheet = musicVC.sheetPresentationController {
+            sheet.detents = Utils.isIpad() ? [.large()] : [.medium()]
+            sheet.preferredCornerRadius = 20
+            sheet.prefersGrabberVisible = true
+        }
+        musicVC.modalPresentationStyle = .pageSheet
+        self.present(musicVC, animated: true)
     }
     
     @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
@@ -827,40 +897,21 @@ extension CameraVC {
 // MARK: - Music UI
 extension CameraVC {
     func updateMusicUI() {
-        if isMusicViewVisible {
-            overlayView.isHidden = false
-            musicView.isHidden = false
-            UIView.animate(withDuration: 0.3) {
-                self.musicView.transform = .identity
-            }
-        } else {
-            UIView.animate(withDuration: 0.3, animations: {
-                self.musicView.transform = CGAffineTransform(translationX: 0, y: self.musicView.frame.height)
-            }) { _ in
-                self.musicView.isHidden = true
-                self.overlayView.isHidden = true
-            }
-        }
     }
 }
 
 // MARK: - Detect Camera
 extension CameraVC: AVCaptureVideoDataOutputSampleBufferDelegate {
-    private func setupPreviewLayer() {
-        previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer.videoGravity = .resizeAspectFill
-        previewLayer.frame = bgCameraView.bounds
-        bgCameraView.layer.addSublayer(previewLayer)
-    }
-    
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        if recordingState == .recording {
+        let currentState = recordingState
+        
+        if currentState == .recording {
             videoComposer.processSampleBuffer(sampleBuffer)
         }
     }
 }
 
-// MARK: - Setup Capture Camera
+// MARK: - Setup Camera
 extension CameraVC {
     private func captureDevice(forPosition position: AVCaptureDevice.Position) -> AVCaptureDevice? {
         let discoverySession = AVCaptureDevice.DiscoverySession(
@@ -902,7 +953,7 @@ extension CameraVC {
             self.captureSession.startRunning()
         }
     }
-        
+    
     private func stopSession() {
         sessionQueue.async { [weak self] in
             guard let self = self, self.captureSession.isRunning else { return }
@@ -915,10 +966,6 @@ extension CameraVC {
             guard let self = self else { return }
             
             self.captureSession.beginConfiguration()
-            
-            DispatchQueue.main.async {
-                self.setupPreviewLayer()
-            }
             
             if self.captureSession.canSetSessionPreset(.hd1920x1080) == true {
                 self.captureSession.sessionPreset = .hd1920x1080
@@ -960,7 +1007,7 @@ extension CameraVC {
             self.captureSession.commitConfiguration()
         }
     }
-        
+    
     private func checkCameraPermission() {
         UserDefaultsManager.shared.onResumeCanLoad = false
         
@@ -998,7 +1045,7 @@ extension CameraVC {
             break
         }
     }
-        
+    
     private func showPermissionDeniedAlert() {
         let alert = UIAlertController(
             title: "Camera Access Required",
@@ -1016,33 +1063,9 @@ extension CameraVC {
         self.present(alert, animated: true)
     }
     
-    private func toggleFlashlight() {
-        guard let device = AVCaptureDevice.default(for: .video), device.hasTorch else { return }
-        
-        do {
-            try device.lockForConfiguration()
-            device.torchMode = device.torchMode == .on ? .off : .on
-            device.unlockForConfiguration()
-            updateFlashlightButton()
-        } catch {
-            debugPrint("Error toggling flashlight")
-        }
-    }
-    
     private func updateFlashlightButton() {
-        guard let device = AVCaptureDevice.default(for: .video) else { return }
-        let imageName = device.torchMode == .on ? UIImage.lightningOffIc : UIImage.lightningOnIc
+        let imageName = isFlashOn ? UIImage.lightningOffIc : UIImage.lightningOnIc
         flashButton.setImage(imageName, for: .normal)
-    }
-}
-
-// MARK: - MusicViewDelegate
-extension CameraVC: MusicViewDelegate {
-    func didSelectMusic(title: String) {
-        musicTitleLB.text = title
-        rightDeleteButtonConstraint.constant = 18
-        widthDeleteButtonConstraint.constant = 16
-        deleteButton.isHidden = false
     }
 }
 
@@ -1059,43 +1082,66 @@ extension CameraVC: FilterModeDelegate {
     }
     
     func getSelectedFocusItem(filter: FilterType, designType: DesignType?, challenge: SurvivalChallengeEntity?) {
-        print("yolo Selected filter: \(filter), design: \(String(describing: designType)), challenge: \(challenge?.name ?? "nil")")
+        if self.filterType == filter {
+            // Chỉ cập nhật properties
+            self.designType = designType
+            self.currentChallenge = challenge
             
-        // Lưu trữ trạng thái cũ
-        let oldFilter = self.filterType
+            // Cập nhật thông tin cho view hiện tại mà không làm lại toàn bộ quá trình
+            switch filter {
+            case .ranking:
+                if let designType = designType {
+                    rankingView?.designType = designType
+                }
+                if let challenge = challenge {
+                    rankingView?.setChallenge(challenge)
+                }
+            case .guess:
+                if let designType = designType {
+                    guessView?.designType = designType
+                }
+                if let challenge = challenge {
+                    guessView?.setChallenge(challenge)
+                }
+            default:
+                break
+            }
+            
+            return
+        }
         
-        // Đặt giá trị mới
         self.filterType = filter
         self.designType = designType
         self.currentChallenge = challenge
         
-        // Nếu filter thay đổi, reset state các view
-        if oldFilter != filter {
-            // Ẩn tất cả view trước
-            rankingView?.isHidden = true
-            guessView?.isHidden = true
-            coloringView?.isHidden = true
-            
-            // Deactivate các view cũ
-            rankingView?.deactivate()
-            guessView?.deactivate()
-            
-            // Reset state cho views
-            rankingView?.resetState()
-            guessView?.resetState()
-        }
+        updateActiveView()
+    }
+}
+
+// MARK: - MusicViewControllerDelegate
+extension CameraVC: MusicViewControllerDelegate, UIAdaptivePresentationControllerDelegate {
+    func didChooseMusic(music: SurvivalChallengeEntity) {
+        self.music = music
         
-        // Cập nhật giao diện với delay để tránh treo
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
+        Task { [weak self] in
             guard let self = self else { return }
-            print("yolo Updating active view for filter: \(filter)")
-            self.updateActiveView()
+            let selectedMusicURL = await self.getSelectedMusicURL(from: music)
+            guard let url = selectedMusicURL else {
+                print("⚠️ Failed to get music URL")
+                return
+            }
+            
+            self.playAudio(with: url, music: music)
         }
     }
 }
 
 // MARK: - Ranking Delegate
 extension CameraVC: RankingViewDelegate {
+    func didStartRecording() {
+        startRecording()
+    }
+    
     func didSelectRankingCell(at index: Int, image: UIImage?, imageURL: String?) {
         guard let cell = rankingView?.collectionView?.cellForItem(at: IndexPath(item: index, section: 0)) as? RankingCell,
               let image = image,
@@ -1109,44 +1155,5 @@ extension CameraVC: RankingViewDelegate {
         cell.animateSelection()
         
         print("Selected ranking cell at index \(index) with image URL: \(imageURL)")
-    }
-}
-
-// MARK: - AVCaptureFileOutputRecordingDelegate
-extension CameraVC: AVCaptureFileOutputRecordingDelegate {
-    func fileOutput(_ output: AVCaptureFileOutput,
-                   didStartRecordingTo fileURL: URL,
-                   from connections: [AVCaptureConnection]) {
-        print("Started recording to: \(fileURL)")
-    }
-    
-    func fileOutput(_ output: AVCaptureFileOutput,
-                   didFinishRecordingTo outputFileURL: URL,
-                   from connections: [AVCaptureConnection],
-                   error: Error?) {
-        if let error = error {
-            print("Error recording video: \(error.localizedDescription)")
-            return
-        }
-        
-        print("Finished recording to: \(outputFileURL)")
-        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let destinationURL = documentsDirectory.appendingPathComponent("recordedVideo_\(Date().timeIntervalSince1970).mp4")
-        
-        do {
-            if FileManager.default.fileExists(atPath: destinationURL.path) {
-                try FileManager.default.removeItem(at: destinationURL)
-            }
-            
-            try FileManager.default.copyItem(at: outputFileURL, to: destinationURL)
-            print("Video saved to: \(destinationURL)")
-            
-            // Navigate to result screen
-            let resultVC = ResultVC()
-            resultVC.videoURL = destinationURL
-            navigationController?.pushViewController(resultVC, animated: false)
-        } catch {
-            print("Error saving video: \(error.localizedDescription)")
-        }
     }
 }

@@ -40,6 +40,7 @@ enum Localized {
         static let delete = "delete".localized
         static let deleteYourVideo = "deleteYourVideo".localized
         static let cancel = "cancel".localized
+        static let emptyFolder = "emptyFolder".localized
     }
     
     enum Video {
@@ -53,5 +54,18 @@ enum Localized {
     
     enum DescriptionChallenge {
         static let tryNow = "tryNow".localized
+    }
+    
+    enum Result {
+        static let share = "share".localized
+        static let save = "save".localized
+        static let discardYourVideo = "discardYourVideo".localized
+        static let cancel = "cancel".localized
+        static let discard = "discard".localized
+        static let success = "success".localized
+        static let videoSavedSuccessfully = "videoSavedSuccessfully".localized
+        static let ok = "ok".localized
+        static let error = "error".localized
+        static let videoSavedError = "videoSavedError".localized
     }
 }
