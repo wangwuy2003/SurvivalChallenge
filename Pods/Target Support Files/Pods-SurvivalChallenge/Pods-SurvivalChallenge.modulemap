@@ -1,6 +1,0 @@
-framework module Pods_SurvivalChallenge {
-  umbrella header "Pods-SurvivalChallenge-umbrella.h"
-
-  export *
-  module * { export * }
-}
