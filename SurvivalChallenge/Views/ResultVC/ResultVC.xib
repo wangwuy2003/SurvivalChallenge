@@ -26,28 +26,40 @@
                 <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="SmB-RA-Dh8">
                     <rect key="frame" x="16" y="746" width="361" height="52"/>
                     <subviews>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ogy-7T-i5u">
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ogy-7T-i5u" customClass="InnerShadowButton" customModule="SurvivalChallenge" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="0.0" width="172.66666666666666" height="52"/>
                             <color key="backgroundColor" name="hex_FFA1A1"/>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                             <state key="normal" title="  Share" image="share_ic">
                                 <color key="titleColor" name="hex_212121"/>
                             </state>
+                            <buttonConfiguration key="configuration" style="plain" image="share_ic" title="  Share" cornerStyle="capsule">
+                                <color key="baseForegroundColor" name="hex_212121"/>
+                            </buttonConfiguration>
+                            <connections>
+                                <action selector="didTapShareBtn:" destination="-1" eventType="touchUpInside" id="vBO-e8-2If"/>
+                            </connections>
                         </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fxN-p8-fxo">
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fxN-p8-fxo" customClass="InnerShadowButton" customModule="SurvivalChallenge" customModuleProvider="target">
                             <rect key="frame" x="188.66666666666663" y="0.0" width="172.33333333333337" height="52"/>
                             <color key="backgroundColor" name="hex_4E75FF"/>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                             <state key="normal" title="  Save" image="save_ic">
                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </state>
+                            <buttonConfiguration key="configuration" style="plain" image="save_ic" title="  Save" cornerStyle="capsule">
+                                <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </buttonConfiguration>
+                            <connections>
+                                <action selector="didTapSaveBtn:" destination="-1" eventType="touchUpInside" id="cDx-mM-3KH"/>
+                            </connections>
                         </button>
                     </subviews>
                     <constraints>
                         <constraint firstAttribute="height" constant="52" id="EPh-Bc-a1n"/>
                     </constraints>
                 </stackView>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rM4-h2-Cdy">
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rM4-h2-Cdy" userLabel="Back Button">
                     <rect key="frame" x="16" y="62" width="36" height="36"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="36" id="bmb-vs-gdo"/>
@@ -59,7 +71,7 @@
                         <action selector="didTapBackBtn:" destination="-1" eventType="touchUpInside" id="lgF-aC-gbF"/>
                     </connections>
                 </button>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uZd-54-yb9">
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uZd-54-yb9" userLabel="Home Button">
                     <rect key="frame" x="341" y="62" width="36" height="36"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="36" id="h20-bX-pEf"/>
@@ -93,7 +105,7 @@
                 <constraint firstItem="SmB-RA-Dh8" firstAttribute="top" secondItem="hrm-wY-1tA" secondAttribute="bottom" constant="173" id="vqK-aT-xgb"/>
                 <constraint firstItem="hrm-wY-1tA" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="66" id="z0M-jK-Obc"/>
             </constraints>
-            <point key="canvasLocation" x="132" y="-11"/>
+            <point key="canvasLocation" x="130.53435114503816" y="-11.267605633802818"/>
         </view>
     </objects>
     <resources>
@@ -114,7 +126,7 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemBlueColor">
-            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

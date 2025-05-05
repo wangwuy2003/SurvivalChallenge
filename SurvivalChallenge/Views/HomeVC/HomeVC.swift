@@ -25,6 +25,8 @@ class HomeVC: UIViewController {
         }
     }
     
+    var challenges: [SurvivalChallengeEntity] = HomeViewModel.shared.allChallenges
+    
     init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -91,7 +93,7 @@ extension HomeVC {
     func setupCollectionView() {
         collectionView.delegate = self
         collectionView.dataSource = self
-        collectionView.register(UINib(nibName: "ChallengeCell", bundle: nil), forCellWithReuseIdentifier: "ChallengeCell")
+        collectionView.register(UINib(nibName: "HomeCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "homeCell")
         collectionView.backgroundColor = .white
     }
     
@@ -183,43 +185,25 @@ extension HomeVC {
 // MARK: - Collection Viewdes
 extension HomeVC: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let count = viewModel.numberOfFilterItems
-        print("Number of items in section: \(count)")
-        return count
+        return challenges.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ChallengeCell", for: indexPath) as? ChallengeCell else {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "homeCell", for: indexPath) as? HomeCollectionViewCell else {
             return UICollectionViewCell()
         }
         
-        let challenge = HomeViewModel.shared.challengeFilter(at: indexPath.item)
-        print("Challenge data for cell \(indexPath.item):")
-        print("  - Username: \(challenge.username)")
-        print("  - Description: \(challenge.textDes)")
-        cell.configure(with: challenge)
+        let challenge = HomeViewModel.shared.allChallenges[indexPath.item]
+        cell.configureCell(model: challenge)
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let challenge = viewModel.challengeFilter(at: indexPath.item)
-        print("Selected challenge: \(challenge.name)")
-
-        var playerItem: AVPlayerItem?
-        if let videoUrlString = challenge.imageUrl.first, let url = URL(string: videoUrlString) {
-            playerItem = AVPlayerItem(url: url)
-        }
+        let item = challenges[indexPath.item]
         
-        let designType = HomeViewModel.shared.getDesignType(for: challenge.category, name: challenge.name)
-
-        let descriptionVC = DescriptionChallengeVC()
-        descriptionVC.textDes = challenge.textDes
-        descriptionVC.playerItem = playerItem
-        descriptionVC.username = challenge.username
-        descriptionVC.designType = designType
-        descriptionVC.challenge = challenge
-        
-        navigationController?.pushViewController(descriptionVC, animated: false)
+        let previewVC = PreviewVC()
+        previewVC.trendItem = item
+        self.navigationController?.pushViewController(previewVC, animated: true)
     }
 }
 

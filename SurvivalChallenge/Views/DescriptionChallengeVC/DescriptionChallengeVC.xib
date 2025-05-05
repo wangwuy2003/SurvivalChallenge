@@ -5,7 +5,6 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -13,6 +12,7 @@
             <connections>
                 <outlet property="bottomView" destination="Psa-kh-Exd" id="g7d-qP-mVL"/>
                 <outlet property="descriptionLB" destination="C2M-3Z-DaS" id="yIv-6S-0bx"/>
+                <outlet property="previewImage" destination="IWL-Qd-K2j" id="Sqc-zE-dR2"/>
                 <outlet property="tryNowButton" destination="lwQ-Eb-45a" id="Pmx-kP-NFG"/>
                 <outlet property="usernameLB" destination="JC7-PI-5FY" id="ced-La-B8j"/>
                 <outlet property="videoPlayerView" destination="O3G-jz-VvZ" id="ex8-hd-yef"/>
@@ -25,10 +25,20 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="O3G-jz-VvZ" userLabel="Video Player View">
-                    <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
-                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <rect key="frame" x="0.0" y="59" width="393" height="759"/>
+                    <subviews>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="img_previewPlaceHolder" translatesAutoresizingMaskIntoConstraints="NO" id="IWL-Qd-K2j">
+                            <rect key="frame" x="0.0" y="0.0" width="393" height="759"/>
+                        </imageView>
+                    </subviews>
+                    <constraints>
+                        <constraint firstAttribute="bottom" secondItem="IWL-Qd-K2j" secondAttribute="bottom" id="CkP-hT-rpK"/>
+                        <constraint firstAttribute="trailing" secondItem="IWL-Qd-K2j" secondAttribute="trailing" id="utk-Nc-Vcl"/>
+                        <constraint firstItem="IWL-Qd-K2j" firstAttribute="top" secondItem="O3G-jz-VvZ" secondAttribute="top" id="uvf-yR-mPX"/>
+                        <constraint firstItem="IWL-Qd-K2j" firstAttribute="leading" secondItem="O3G-jz-VvZ" secondAttribute="leading" id="xj2-Qr-cs9"/>
+                    </constraints>
                 </view>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Psa-kh-Exd" userLabel="Bottom View">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Psa-kh-Exd" userLabel="Bottom View" customClass="CustomGradientView" customModule="SurvivalChallenge" customModuleProvider="target">
                     <rect key="frame" x="0.0" y="664" width="393" height="154"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Description" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C2M-3Z-DaS">
@@ -83,16 +93,15 @@
                 </button>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
-            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
                 <constraint firstItem="Psa-kh-Exd" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="0vd-12-DVB"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="Psa-kh-Exd" secondAttribute="trailing" id="7bA-pT-Xaj"/>
                 <constraint firstItem="azT-2q-nz1" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="DrF-vc-PjF"/>
                 <constraint firstItem="azT-2q-nz1" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="3" id="JAk-Ax-T5M"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="O3G-jz-VvZ" secondAttribute="trailing" id="Oc8-v9-O8j"/>
-                <constraint firstItem="O3G-jz-VvZ" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="RKd-Fm-zXM"/>
+                <constraint firstItem="O3G-jz-VvZ" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="RKd-Fm-zXM"/>
                 <constraint firstItem="O3G-jz-VvZ" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="dSI-So-BQt"/>
-                <constraint firstAttribute="bottom" secondItem="O3G-jz-VvZ" secondAttribute="bottom" id="pK9-UU-aC3"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="O3G-jz-VvZ" secondAttribute="bottom" id="pK9-UU-aC3"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="Psa-kh-Exd" secondAttribute="bottom" id="xRI-gC-zc7"/>
             </constraints>
             <point key="canvasLocation" x="132" y="-11"/>
@@ -100,8 +109,6 @@
     </objects>
     <resources>
         <image name="back_btn_ic" width="36" height="36"/>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
+        <image name="img_previewPlaceHolder" width="375" height="746"/>
     </resources>
 </document>

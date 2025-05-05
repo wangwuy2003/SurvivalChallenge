@@ -13,6 +13,7 @@ target 'SurvivalChallenge' do
   pod 'Alamofire'
   pod 'SDWebImage'
   pod 'MiTuKit'
+  pod 'AlamofireImage'
   pod 'GoogleMLKit/FaceDetection'
   # Pods for SurvivalChallenge
 

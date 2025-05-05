@@ -9,7 +9,7 @@ import UIKit
 import Stevia
 
 protocol SelectFilterDelegate: AnyObject {
-    func didSelectFilter(at index: Int)
+    func didSelectFilter(challenge: SurvivalChallengeEntity)
 }
 
 class SelectFilterVC: UIViewController {
@@ -18,6 +18,8 @@ class SelectFilterVC: UIViewController {
     @IBOutlet weak var titleLB: UILabel!
     @IBOutlet weak var saveButton: InnerShadowButton!
     @IBOutlet weak var collectionView: UICollectionView!
+    
+    let challenges: [SurvivalChallengeEntity] = HomeViewModel.shared.allChallenges
     
     private var selectedIndex: Int?
     
@@ -33,11 +35,15 @@ class SelectFilterVC: UIViewController {
     
     @IBAction func didTapSaveBtn(_ sender: Any) {
         guard let selectedIndex = selectedIndex else {
-            print("No filterselected")
+            print("No filter selected")
             return
         }
         
-        delegate?.didSelectFilter(at: selectedIndex)
+        // Get the selected challenge from the array
+        let selectedChallenge = challenges[selectedIndex]
+        
+        // Pass the challenge object to the delegate method
+        delegate?.didSelectFilter(challenge: selectedChallenge)
         navigationController?.popViewController(animated: false)
     }
     
@@ -56,6 +62,13 @@ extension SelectFilterVC {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(UINib(nibName: "FilterCell", bundle: nil), forCellWithReuseIdentifier: "FilterCell")
+        
+        // Configure the layout for 3 items per row
+        if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+            flowLayout.minimumInteritemSpacing = 8
+            flowLayout.minimumLineSpacing = 8
+            flowLayout.sectionInset = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        }
     }
     
     func setupViews() {
@@ -74,14 +87,14 @@ extension SelectFilterVC {
 
 extension SelectFilterVC: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return HomeViewModel.shared.numberOfAllItems
+        return challenges.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FilterCell", for: indexPath) as? FilterCell else {
             return UICollectionViewCell()
         }
-        let challenge = HomeViewModel.shared.challengeAll(at: indexPath.item)
+        let challenge = challenges[indexPath.item]
         let isSelected = (indexPath.item == selectedIndex)
         cell.configure(with: challenge, isSelected: isSelected)
         return cell
@@ -106,18 +119,23 @@ extension SelectFilterVC: UICollectionViewDataSource, UICollectionViewDelegate {
 
 extension SelectFilterVC: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 110, height: 110)
+        // Calculate the width for 3 items per row with spacing
+        let totalSpacing: CGFloat = 8 * 4 // 8 points spacing × (3 items + 1 edge) = 32 points
+        let availableWidth = collectionView.bounds.width - totalSpacing
+        let itemWidth = availableWidth / 3
+        
+        return CGSize(width: itemWidth, height: itemWidth) // Square cells
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        6
+        return 8 // Vertical spacing between rows
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        6
+        return 8 // Horizontal spacing between items
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-            return UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 6)
+        return UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8) // Padding around the entire collection
     }
 }

@@ -7,16 +7,33 @@
 
 import UIKit
 import Stevia
+import MiTuKit
 
 class MyVideosVC: UIViewController {
 
+    @IBOutlet weak var emptyLB: UILabel!
+    @IBOutlet weak var emptyView: UIView!
     @IBOutlet weak var titleLB: UILabel!
     @IBOutlet weak var strokeTitleLB: UILabel!
     @IBOutlet weak var collectionView: UICollectionView!
+    
+    private var videoList: [URL] = [] {
+        didSet {
+            emptyView.isHidden = !videoList.isEmpty
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
         setupCollectionView()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(getData), name: .didSaveVideo, object: nil)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        getData()
     }
     
     @IBAction func didTapSettingBtn(_ sender: Any) {
@@ -25,6 +42,11 @@ class MyVideosVC: UIViewController {
 }
 
 extension MyVideosVC {
+    @objc func getData() {
+        self.videoList = FileHelper.shared.getAllVideosInRecordFolder()
+        self.collectionView.reloadData()
+    }
+    
     func setupCollectionView() {
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -32,6 +54,14 @@ extension MyVideosVC {
     }
     
     func setupViews() {
+        emptyLB.style {
+            $0.text = Localized.MyVideos.emptyFolder
+        }
+        
+        emptyView.style {
+            $0.isHidden = true
+        }
+        
         titleLB.style {
             $0.clipsToBounds = true
             strokeTitleLB.text = Localized.MyVideos.myVideos
@@ -63,34 +93,10 @@ extension MyVideosVC {
     }
 }
 
-extension MyVideosVC {
-    // MARK: - Alert: Confirm Delete
-    private func showConfirmAlert(for indexPath: IndexPath) {
-        let alert = UIAlertController(title: "", message: Localized.MyVideos.deleteYourVideo, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: Localized.MyVideos.cancel, style: .cancel))
-        alert.addAction(UIAlertAction(title: Localized.MyVideos.delete, style: .destructive, handler: { [weak self] _ in
-            print("delete...")
-        }))
-        present(alert, animated: true)
-    }
-    
-    // MARK: - ContextMenu
-    private func contextMenuActions(for indexPath: IndexPath) -> UIMenu {
-        return UIMenu(children: [
-            UIAction(title: Localized.MyVideos.share, image: .upload, handler: { [weak self] _ in
-                guard let self = self else { return }
-            }),
-            UIAction(title: Localized.MyVideos.delete, image: .trashIc, handler: { [weak self] _ in
-                self?.showConfirmAlert(for: indexPath)
-            })
-        ])
-    }
-}
-
 // MARK: - Collection View
 extension MyVideosVC: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        return videoList.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -98,52 +104,80 @@ extension MyVideosVC: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
         
-        let menu = contextMenuActions(for: indexPath)
-        cell.updateMenu(with: menu)
-        cell.toggleSelection = { [weak self] in
-            self?.collectionView.reloadData()
-        }
+        cell.delegate = self
+        cell.configureCell(video: videoList[indexPath.row])
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let videoURL = videoList[indexPath.row]
         let resultVideoVC = ResultVideoVC()
-        resultVideoVC.videoIndex = indexPath.row
+        resultVideoVC.videoURL = videoURL
         navigationController?.pushViewController(resultVideoVC, animated: false)
-    }
-}
-
-extension MyVideosVC: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
-        
-        guard let indexPath = indexPaths.first else { return nil }
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
-            return self?.contextMenuActions(for: indexPath)
-        }
     }
 }
 
 extension MyVideosVC: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let padding: CGFloat = Utils.isIpad() ? 56 : 16
-        let totalPadding = padding * 2
-        let interitemSpacing: CGFloat = 10
-        let totalWidth = UIScreen.main.bounds.width - totalPadding - interitemSpacing
-        let itemWidth = totalWidth / 2
+        let totalItemPerRow = Utils.isIpad() ? 3.0 : 2.0
+        let padding = Utils.isIpad() ? 24.0 : 16.0
+        let gap = Utils.isIpad() ? 32.0 : 15.0
+        let totalPadding: CGFloat = padding * 2 + gap * (totalItemPerRow - 1)
+        let width = (maxWidth - totalPadding) / totalItemPerRow
+        let height = Utils.isIpad() ? 360.0 : 243.0
         
-        return CGSize(width: Int(itemWidth), height: 266)
+        return CGSize(width: width, height: height)
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        20
+        return Utils.isIpad() ? 28 : 23
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 10
+        return Utils.isIpad() ? 32 : 15
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        let padding: CGFloat = Utils.isIpad() ? 56 : 16
-        return UIEdgeInsets(top: 0, left: padding, bottom: 0, right: padding)
+        let padding = Utils.isIpad() ? 24.0 : 16.0
+        return UIEdgeInsets(top: 12, left: padding, bottom: 40, right: padding)
     }
 }
 
+//MARK: - MyVideoCellDelegate
+extension MyVideosVC: MyVideoCellDelegate {
+    func didSelectShare(at cell: MyVideoCell) {
+        guard let indexPath = collectionView.indexPath(for: cell) else {return}
+        
+        let videoURL = videoList[indexPath.row]
+        
+        self.share(items: [videoURL])
+    }
+    
+    func didSelectDelete(at cell: MyVideoCell) {
+        guard let indexPath = collectionView.indexPath(for: cell) else { return }
+
+        let videoURL = videoList[indexPath.row]
+
+        let alert = UIAlertController(
+            title: Localized.MyVideos.deleteYourVideo,
+            message: nil,
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: Localized.MyVideos.cancel,
+                                      style: .cancel,
+                                      handler: nil))
+
+        alert.addAction(UIAlertAction(title: Localized.MyVideos.delete,
+                                      style: .destructive,
+                                      handler: { _ in
+            Task {
+                let fileName = videoURL.lastPathComponent
+                await FileHelper.shared.removeFile(fileName: fileName, from: .record)
+                self.videoList.remove(at: indexPath.row)
+                self.collectionView.deleteItems(at: [indexPath])
+            }
+        }))
+
+        present(alert, animated: true, completion: nil)
+    }
+}

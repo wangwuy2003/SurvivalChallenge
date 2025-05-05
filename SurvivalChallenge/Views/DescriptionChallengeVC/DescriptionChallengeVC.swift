@@ -7,7 +7,8 @@ class DescriptionChallengeVC: UIViewController {
     @IBOutlet weak var videoPlayerView: UIView!
     @IBOutlet weak var usernameLB: UILabel!
     @IBOutlet weak var descriptionLB: UILabel!
-    @IBOutlet weak var bottomView: UIView!
+    @IBOutlet weak var previewImage: UIImageView!
+    @IBOutlet weak var bottomView: CustomGradientView!
     @IBOutlet weak var tryNowButton: InnerShadowButton!
     
     private var player: AVPlayer?
@@ -26,7 +27,25 @@ class DescriptionChallengeVC: UIViewController {
         super.viewDidLoad()
         setupViews()
         setupVideoPlayer()
+        setupAudio()
         updateUI()
+        
+        
+        NotificationCenter.default.addObserver(self,
+            selector: #selector(playerDidFinishPlaying),
+            name: .AVPlayerItemDidPlayToEndTime,
+            object: player?.currentItem
+        )
+        NotificationCenter.default.addObserver(self,
+            selector: #selector(appWillEnterForeground),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(self,
+            selector: #selector(appDidEnterBackground),
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil
+        )
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -49,9 +68,15 @@ class DescriptionChallengeVC: UIViewController {
     @IBAction func didTapTryNowBtn(_ sender: Any) {
         let cameraVC = CameraVC()
         cameraVC.designType = designType
-        cameraVC.challenges = HomeViewModel.shared.allChallenges.prefix(13).map { $0 }
-        cameraVC.selectedChallenge = challenge
-        navigationController?.pushViewController(cameraVC, animated: false)
+        cameraVC.currentChallenge = challenge
+        
+        let transition = CATransition()
+        transition.duration = 0.3
+        transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+        transition.type = .fade
+        self.navigationController?.view.layer.add(transition, forKey: kCATransition)
+        
+        self.navigationController?.pushViewController(cameraVC, animated: false)
     }
     
     deinit {
@@ -63,6 +88,13 @@ class DescriptionChallengeVC: UIViewController {
 
 extension DescriptionChallengeVC {
     func setupViews() {
+        bottomView.startPoint = .topCenter
+        bottomView.endPoint = .bottomCenter
+        bottomView.colors = [
+            .black.withAlphaComponent(0),
+            .black.withAlphaComponent(0.25),
+        ]
+        
         tryNowButton.style {
             $0.backgroundColor = .hex4E75FF
             $0.setTitle(Localized.DescriptionChallenge.tryNow, for: .normal)
@@ -101,6 +133,29 @@ extension DescriptionChallengeVC {
 }
 
 extension DescriptionChallengeVC {
+    private func clear() {
+        player?.pause()
+        
+        if let playerItem = player?.currentItem {
+            NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: playerItem)
+        }
+        
+        playerLayer?.removeFromSuperlayer()
+        
+        playerLayer = nil
+        player = nil
+    }
+    
+    private func setupAudio() {
+        do {
+            let audioSession = AVAudioSession.sharedInstance()
+            try audioSession.setCategory(.playback, mode: .default)
+            try audioSession.setActive(true)
+        } catch {
+            print("Failed to set up audio session: \(error)")
+        }
+    }
+    
     private func setupVideoPlayer() {
         guard let playerItem = playerItem else {
             print("No player item provided")
@@ -116,7 +171,7 @@ extension DescriptionChallengeVC {
         playerLayer?.frame = videoPlayerView.bounds
         playerLayer?.videoGravity = .resizeAspectFill
         if let playerLayer = playerLayer {
-            videoPlayerView.layer.insertSublayer(playerLayer, at: 0) // Below bottomView
+            videoPlayerView.layer.insertSublayer(playerLayer, at: 0) 
         }
 
         playerItemObserver = playerItem.observe(\.status, options: [.new]) { [weak self] item, _ in
@@ -161,5 +216,18 @@ extension DescriptionChallengeVC {
     private func updateUI() {
         descriptionLB.text = textDes ?? "No description"
         usernameLB.text = username ?? "Unknown user"
+    }
+    
+    @objc private func playerDidFinishPlaying() {
+        player?.seek(to: .zero)
+        player?.play()
+    }
+    
+    @objc private func appWillEnterForeground() {
+        player?.play()
+    }
+    
+    @objc private func appDidEnterBackground() {
+        player?.pause()
     }
 }

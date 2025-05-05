@@ -53,6 +53,7 @@ class RankingCell: UICollectionViewCell {
             numberLB.font = UIFont.sfProDisplayBold(ofSize: 20)
             numberLB.layer.borderWidth = 0
             self.layer.borderWidth = 0
+            self.backgroundColor = .hex3D3D3D40
         case .case3:
             numberLB.textColor = .white
             numberLB.font = UIFont.sfProDisplayBold(ofSize: 20)

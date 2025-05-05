@@ -6,7 +6,7 @@
 //
 
 import UIKit
-
+import AlamofireImage
 
 class FilterCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
@@ -25,14 +25,17 @@ class FilterCollectionViewCell: UICollectionViewCell {
     }
     
     func configure(with challenge: SurvivalChallengeEntity) {
-        if let thumpUrl = challenge.thumpFilter, let url = URL(string: thumpUrl) {
-            imageView.sd_setImage(
-                with: url,
-                placeholderImage: UIImage(named: "placeholder"),
-                options: [.progressiveLoad, .highPriority]
+        if let url = URL(string: challenge.thumpFilter ?? "") {
+            let placeHolder = UIImage.placeholder
+            
+            let cacheKey = url.absoluteString
+            
+            imageView.af.setImage(
+                withURL: url,
+                cacheKey: cacheKey,
+                placeholderImage: placeHolder,
+                imageTransition: .crossDissolve(0.2)
             )
-        } else {
-            imageView.image = UIImage(named: "placeholder")
         }
     }
 }

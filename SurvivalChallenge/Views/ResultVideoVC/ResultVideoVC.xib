@@ -11,7 +11,9 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ResultVideoVC" customModule="SurvivalChallenge" customModuleProvider="target">
             <connections>
+                <outlet property="menuButton" destination="I53-mI-DGB" id="iJp-Cd-gns"/>
                 <outlet property="saveButton" destination="3e3-fA-faV" id="puK-pt-yRC"/>
+                <outlet property="videoView" destination="OER-vm-x40" id="cc6-LV-pIK"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -20,9 +22,21 @@
             <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="placeholder1" translatesAutoresizingMaskIntoConstraints="NO" id="1Nh-MQ-070">
-                    <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
-                </imageView>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OER-vm-x40" userLabel="Video View">
+                    <rect key="frame" x="0.0" y="59" width="393" height="759"/>
+                    <subviews>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="placeholder1" translatesAutoresizingMaskIntoConstraints="NO" id="1Nh-MQ-070">
+                            <rect key="frame" x="0.0" y="0.0" width="393" height="759"/>
+                        </imageView>
+                    </subviews>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <constraints>
+                        <constraint firstAttribute="trailing" secondItem="1Nh-MQ-070" secondAttribute="trailing" id="Kgy-F1-qCp"/>
+                        <constraint firstItem="1Nh-MQ-070" firstAttribute="top" secondItem="OER-vm-x40" secondAttribute="top" id="Mrd-uj-wvE"/>
+                        <constraint firstItem="1Nh-MQ-070" firstAttribute="leading" secondItem="OER-vm-x40" secondAttribute="leading" id="aOO-Ac-fb8"/>
+                        <constraint firstAttribute="bottom" secondItem="1Nh-MQ-070" secondAttribute="bottom" id="lwx-r3-KAX"/>
+                    </constraints>
+                </view>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="taL-Wt-GIQ" userLabel="Back Button">
                     <rect key="frame" x="16" y="62" width="36" height="36"/>
                     <constraints>
@@ -53,24 +67,28 @@
                     <constraints>
                         <constraint firstAttribute="height" constant="52" id="zvQ-5s-edg"/>
                     </constraints>
+                    <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                    <state key="normal" title=" Save" image="save_ic"/>
+                    <state key="normal" title=" Share" image="square.and.arrow.up" catalog="system"/>
+                    <connections>
+                        <action selector="didTapShareBtn:" destination="-1" eventType="touchUpInside" id="rr7-Po-2oA"/>
+                    </connections>
                 </button>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
-            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
-                <constraint firstItem="1Nh-MQ-070" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="A69-k6-igB"/>
-                <constraint firstAttribute="bottom" secondItem="1Nh-MQ-070" secondAttribute="bottom" id="Cwt-wY-8wh"/>
+                <constraint firstItem="OER-vm-x40" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="GCB-AL-SXV"/>
+                <constraint firstItem="OER-vm-x40" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="Rns-Hy-BRV"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="3e3-fA-faV" secondAttribute="trailing" constant="16" id="UVV-Sg-vJM"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="I53-mI-DGB" secondAttribute="trailing" constant="16" id="Y3J-q0-t8h"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="OER-vm-x40" secondAttribute="trailing" id="Ydi-qD-lwS"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="3e3-fA-faV" secondAttribute="bottom" constant="16" id="ZAE-4L-pjM"/>
                 <constraint firstItem="taL-Wt-GIQ" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="b3d-Ve-sYW"/>
                 <constraint firstItem="3e3-fA-faV" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="cvc-oA-kwS"/>
-                <constraint firstItem="1Nh-MQ-070" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="mNf-XY-Qvw"/>
                 <constraint firstItem="taL-Wt-GIQ" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="3" id="rH7-iK-4k7"/>
                 <constraint firstItem="I53-mI-DGB" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="3" id="se8-QH-xTa"/>
-                <constraint firstAttribute="trailing" secondItem="1Nh-MQ-070" secondAttribute="trailing" id="tgy-dY-l41"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="OER-vm-x40" secondAttribute="bottom" id="vz2-c5-SDS"/>
             </constraints>
             <point key="canvasLocation" x="132" y="-11"/>
         </view>
@@ -79,7 +97,7 @@
         <image name="back_btn_ic" width="36" height="36"/>
         <image name="menu_ic" width="36" height="36"/>
         <image name="placeholder1" width="375" height="746"/>
-        <image name="save_ic" width="24" height="24"/>
+        <image name="square.and.arrow.up" catalog="system" width="110" height="128"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
