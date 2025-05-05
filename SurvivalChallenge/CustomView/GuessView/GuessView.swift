@@ -2,8 +2,10 @@ import UIKit
 import Stevia
 import AVFoundation
 import SDWebImage
+import AlamofireImage
+import CoreImage
 
-class GuessView: UIView {
+class GuessView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     @IBOutlet var contentView: UIView!
     @IBOutlet weak var meView: UIView!
     @IBOutlet weak var myBoyView: UIView!
@@ -15,19 +17,26 @@ class GuessView: UIView {
     
     private var session: AVCaptureSession?
     private var isUsingFrontCamera = true
+    private var videoOutput: AVCaptureVideoDataOutput?
+    private let ciContext = CIContext(options: [.useSoftwareRenderer: false])
     private var isScanning = false
     private var hasCompletedGuess = false
     private var guessImageURLs: (me: [String], myBoy: [String]) = ([], [])
     private var selectedGuessImages: (me: String?, myBoy: String?) = (nil, nil)
     private var isActive = false
     
+    private let videoQueue = DispatchQueue(label: "com.guess.videoQueue", qos: .userInteractive)
+    
     private let previewImageView = UIImageView()
     private let scanlineImageView = UIImageView()
+    
+    var shouldKeepImagesOnReset: Bool = false
+    var cachedMeImageUrl: String?
+    var cachedMyBoyImageUrl: String?
     
     // MARK: - Initialization
     override func awakeFromNib() {
         super.awakeFromNib()
-        print("yolo GuessView awakeFromNib called")
         setupView()
     }
     
@@ -44,7 +53,7 @@ class GuessView: UIView {
     }
     
     deinit {
-        deactivate()
+//        deactivate()
         print("⚙️ deinit \(Self.self)")
     }
     
@@ -57,15 +66,11 @@ class GuessView: UIView {
     }
     
     func setupView() {
-        // Check outlets to avoid crash
-        if let meView = meView, let myBoyView = myBoyView {
-            meView.borderColor = .hexED0384
-            meView.borderWidth = 4
-            myBoyView.borderColor = .hexED0384
-            myBoyView.borderWidth = 4
-        }
+        meView.borderColor = .hexED0384
+        meView.borderWidth = 4
+        myBoyView.borderColor = .hexED0384
+        myBoyView.borderWidth = 4
         
-        // Setup preview image view (optional, can be used for static background if needed)
         previewImageView.contentMode = .scaleAspectFill
         previewImageView.clipsToBounds = true
         insertSubview(previewImageView, at: 0)
@@ -77,7 +82,6 @@ class GuessView: UIView {
             previewImageView.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
         
-        // Setup scanline image view
         scanlineImageView.image = .scanLine
         scanlineImageView.contentMode = .scaleToFill
         scanlineImageView.clipsToBounds = true
@@ -87,8 +91,8 @@ class GuessView: UIView {
         NSLayoutConstraint.activate([
             scanlineImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
             scanlineImageView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            scanlineImageView.heightAnchor.constraint(equalToConstant: 4),
-            scanlineImageView.topAnchor.constraint(equalTo: topAnchor) // Initial position
+            scanlineImageView.heightAnchor.constraint(equalToConstant: 60),
+            scanlineImageView.topAnchor.constraint(equalTo: topAnchor)
         ])
         
         if let contentView = contentView {
@@ -118,6 +122,28 @@ class GuessView: UIView {
         guard let session = session else { return }
         self.session = session
         self.isUsingFrontCamera = isFrontCamera
+        
+        if let existingOutput = videoOutput {
+            session.removeOutput(existingOutput)
+        }
+        
+        let output = AVCaptureVideoDataOutput()
+        output.setSampleBufferDelegate(self, queue: videoQueue)
+        
+        if session.canAddOutput(output) {
+            session.addOutput(output)
+            videoOutput = output
+            print("Successfully set up video output")
+        } else {
+            print("Failed to add video output to session")
+        }
+    }
+    
+    func prepareForCameraSwap() {
+        let snapshot = previewImageView.image
+        DispatchQueue.main.async {
+            self.previewImageView.image = snapshot
+        }
     }
     
     func setChallenge(_ challenge: SurvivalChallengeEntity?) {
@@ -146,12 +172,28 @@ class GuessView: UIView {
     }
     
     func resetState() {
+//        isScanning = false
+//        hasCompletedGuess = false
+//        selectedGuessImages = (nil, nil)
+//        resetImages()
+//        stopScanning()
+//        print("yolo GuessView state reset")
+        
         isScanning = false
-        hasCompletedGuess = false
-        selectedGuessImages = (nil, nil)
-        resetImages()
+            
+        if shouldKeepImagesOnReset && hasCompletedGuess {
+            print("yolo GuessView keeping images during reset")
+        } else {
+            // Standard reset behavior
+            hasCompletedGuess = false
+            selectedGuessImages = (nil, nil)
+            resetImages()
+            cachedMeImageUrl = nil
+            cachedMyBoyImageUrl = nil
+        }
+        
         stopScanning()
-        print("yolo GuessView state reset")
+        print("yolo GuessView state reset with keepImages=\(shouldKeepImagesOnReset)")
     }
     
     func startRecording() {
@@ -162,11 +204,28 @@ class GuessView: UIView {
         startScanning()
     }
     
+    // MARK: - Camera Output Processing (Added from RankingView)
+    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        guard isActive, let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+            return
+        }
+        
+        let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+        let orientedImage = isUsingFrontCamera ? ciImage.oriented(.leftMirrored) : ciImage.oriented(.right)
+        
+        if let cgImage = ciContext.createCGImage(orientedImage, from: orientedImage.extent) {
+            let uiImage = UIImage(cgImage: cgImage)
+            DispatchQueue.main.async { [weak self] in
+                self?.previewImageView.image = uiImage
+            }
+        }
+    }
+    
     // MARK: - UI Methods
     func resetImages() {
         if let meImage = meImage, let myBoyImage = myBoyImage {
-            meImage.image = UIImage(named: "squidgame")
-            myBoyImage.image = UIImage(named: "squidgame")
+            meImage.image = .squidgame
+            myBoyImage.image = .squidgame
             meImage.alpha = 1
             myBoyImage.alpha = 1
             print("yolo GuessView images reset")
@@ -174,41 +233,75 @@ class GuessView: UIView {
     }
     
     func setImages(meUrl: String?, myBoyUrl: String?) {
+        
+        cachedMeImageUrl = meUrl
+        cachedMyBoyImageUrl = myBoyUrl
+        
         guard let meImage = meImage, let myBoyImage = myBoyImage else {
             print("Error: Image views are nil in setImages")
             return
         }
         
-        let defaultImage = UIImage(named: "squidgame")
-        meImage.image = defaultImage
-        myBoyImage.image = defaultImage
+        meImage.image = .squidgame
+        myBoyImage.image = .squidgame
+        meImage.alpha = 1
+        myBoyImage.alpha = 1
         
         if let meUrl = meUrl, let url = URL(string: meUrl) {
-            meImage.sd_setImage(with: url, placeholderImage: defaultImage) { [weak self] (image, error, _, _) in
-                if let error = error {
-                    print("yolo Failed to load meImage: \(error.localizedDescription)")
-                } else {
-                    print("yolo Loaded meImage: \(meUrl)")
-                    self?.meImage?.alpha = 0
-                    UIView.animate(withDuration: 0.3) {
-                        self?.meImage?.alpha = 1
+            let placeholder = UIImage.squidgame
+            
+            meImage.af.setImage(
+                withURL: url,
+                placeholderImage: placeholder,
+                filter: nil,
+                progress: nil,
+                progressQueue: DispatchQueue.main,
+                imageTransition: .crossDissolve(0.5),
+                runImageTransitionIfCached: false,
+                completion: { [weak self] response in
+                    guard let self else { return }
+                    switch response.result {
+                    case .success(let image):
+                        print("yolo Loaded meImage: \(meUrl)")
+                    case .failure(let error):
+                        print("yolo Failed to load meImage: \(error.localizedDescription)")
                     }
                 }
-            }
+            )
         }
         
         if let myBoyUrl = myBoyUrl, let url = URL(string: myBoyUrl) {
-            myBoyImage.sd_setImage(with: url, placeholderImage: defaultImage) { [weak self] (image, error, _, _) in
-                if let error = error {
-                    print("yolo Failed to load myBoyImage: \(error.localizedDescription)")
-                } else {
-                    print("yolo Loaded myBoyImage: \(myBoyUrl)")
-                    self?.myBoyImage?.alpha = 0
-                    UIView.animate(withDuration: 0.3) {
-                        self?.myBoyImage?.alpha = 1
-                    }
+            let placeholder = UIImage.squidgame
+            
+            ImageDownloader.default.download(URLRequest(url: url), completion: { [weak self] response in
+                guard let self else { return }
+                guard let _ = response.value else {
+                    print("yolo Failed to load myBoyImage")
+                    return
                 }
-            }
+                
+                print("yolo Loaded myBoyImage: \(myBoyUrl)")
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    myBoyImage.af.setImage(
+                        withURL: url,
+                        placeholderImage: placeholder,
+                        filter: nil,
+                        progress: nil,
+                        progressQueue: DispatchQueue.main,
+                        imageTransition: .crossDissolve(0.5),
+                        runImageTransitionIfCached: true,
+                        completion: nil
+                    )
+                }
+            })
+        }
+    }
+    
+    func restoreCachedImages() {
+        if hasCompletedGuess && cachedMeImageUrl != nil && cachedMyBoyImageUrl != nil {
+            print("yolo Restoring cached GuessView images")
+            setImages(meUrl: cachedMeImageUrl, myBoyUrl: cachedMyBoyImageUrl)
         }
     }
     
@@ -222,19 +315,23 @@ class GuessView: UIView {
         scanlineImageView.isHidden = false
         
         let viewHeight = bounds.height
-        let startY: CGFloat = 0
-        let endY: CGFloat = viewHeight
+        // Calculate middle 2/3 of the screen
+        let startY = viewHeight / 6  // 1/6 from the top
+        let endY = viewHeight * 5 / 6  // 5/6 from the top (or 1/6 from the bottom)
+        let scanDistance = endY - startY
         
-        // Reset scanline to top
-        scanlineImageView.transform = .identity
+        // Position scanline at the starting position (1/6 from top)
+        scanlineImageView.transform = CGAffineTransform(translationX: 0, y: startY)
         
-        // Animate scanline from top to bottom and back
+        // Animate scanline only through the middle 2/3 of the screen
         UIView.animateKeyframes(withDuration: 3.0, delay: 0, options: [.calculationModeLinear], animations: {
             UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.5) {
+                // Move down to 5/6 position
                 self.scanlineImageView.transform = CGAffineTransform(translationX: 0, y: endY)
             }
             UIView.addKeyframe(withRelativeStartTime: 0.5, relativeDuration: 0.5) {
-                self.scanlineImageView.transform = CGAffineTransform(translationX: 0, y: 0)
+                // Move back up to 1/6 position
+                self.scanlineImageView.transform = CGAffineTransform(translationX: 0, y: startY)
             }
         }, completion: { [weak self] finished in
             guard let self = self, finished else { return }
@@ -242,7 +339,7 @@ class GuessView: UIView {
             self.selectGuessImages()
         })
         
-        print("yolo Started scanning animation")
+        print("yolo Started scanning animation in middle 2/3 of screen")
     }
     
     private func stopScanning() {

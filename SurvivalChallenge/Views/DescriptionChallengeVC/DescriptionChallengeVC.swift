@@ -7,6 +7,7 @@ class DescriptionChallengeVC: UIViewController {
     @IBOutlet weak var videoPlayerView: UIView!
     @IBOutlet weak var usernameLB: UILabel!
     @IBOutlet weak var descriptionLB: UILabel!
+    @IBOutlet weak var previewImage: UIImageView!
     @IBOutlet weak var bottomView: CustomGradientView!
     @IBOutlet weak var tryNowButton: InnerShadowButton!
     
@@ -67,9 +68,15 @@ class DescriptionChallengeVC: UIViewController {
     @IBAction func didTapTryNowBtn(_ sender: Any) {
         let cameraVC = CameraVC()
         cameraVC.designType = designType
-        cameraVC.challenges = HomeViewModel.shared.allChallenges.prefix(13).map { $0 }
-        cameraVC.selectedChallenge = challenge
-        navigationController?.pushViewController(cameraVC, animated: false)
+        cameraVC.currentChallenge = challenge
+        
+        let transition = CATransition()
+        transition.duration = 0.3
+        transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+        transition.type = .fade
+        self.navigationController?.view.layer.add(transition, forKey: kCATransition)
+        
+        self.navigationController?.pushViewController(cameraVC, animated: false)
     }
     
     deinit {
@@ -164,7 +171,7 @@ extension DescriptionChallengeVC {
         playerLayer?.frame = videoPlayerView.bounds
         playerLayer?.videoGravity = .resizeAspectFill
         if let playerLayer = playerLayer {
-            videoPlayerView.layer.insertSublayer(playerLayer, at: 0) // Below bottomView
+            videoPlayerView.layer.insertSublayer(playerLayer, at: 0) 
         }
 
         playerItemObserver = playerItem.observe(\.status, options: [.new]) { [weak self] item, _ in

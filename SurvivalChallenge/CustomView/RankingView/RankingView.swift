@@ -106,11 +106,10 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         NSLayoutConstraint.activate([
             imageOverlayView.centerXAnchor.constraint(equalTo: centerXAnchor),
             imageOverlayView.topAnchor.constraint(equalTo: topAnchor, constant: 50), // Cách top 50
-            imageOverlayView.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.6), // Chiếm 60% chiều rộng màn hình
-            imageOverlayView.heightAnchor.constraint(equalTo: imageOverlayView.widthAnchor, multiplier: 1.0) // Tỷ lệ 1:1
+            imageOverlayView.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.6),
+            imageOverlayView.heightAnchor.constraint(equalTo: imageOverlayView.widthAnchor, multiplier: 1.0)
         ])
         
-        // Đưa imageOverlayView lên trên cùng
         bringSubviewToFront(imageOverlayView)
     }
     
@@ -128,7 +127,7 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     }
     
     deinit {
-        deactivate()
+//        deactivate()
         print("⚙️ deinit \(Self.self)")
     }
     
@@ -137,17 +136,17 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         startContinuousRandomization()
     }
     
-    func deactivate() {
-        isActive = false
-        if let videoOutput = videoOutput {
-            videoOutput.setSampleBufferDelegate(nil, queue: nil)
-        }
-        stopRandomization()
-        DispatchQueue.main.async {
-            self.previewImageView.image = nil
-            self.imageOverlayView.isHidden = true
-        }
-    }
+//    func deactivate() {
+//        isActive = false
+//        if let videoOutput = videoOutput {
+//            videoOutput.setSampleBufferDelegate(nil, queue: nil)
+//        }
+//        stopRandomization()
+//        DispatchQueue.main.async {
+//            self.previewImageView.image = nil
+//            self.imageOverlayView.isHidden = true
+//        }
+//    }
     
     func startRecording() {
         isRecording = true
@@ -218,7 +217,7 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         
         DispatchQueue.main.async { [weak self] in
             self?.collectionView?.reloadData()
-            if !self!.isRecording {
+            if ((self?.isRecording) != nil) {
                 self?.startContinuousRandomization()
             }
         }
@@ -246,7 +245,6 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             return
         }
         
-        // Luôn hiển thị camera preview cơ bản
         let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
         let orientedImage = isUsingFrontCamera ? ciImage.oriented(.leftMirrored) : ciImage.oriented(.right)
         
@@ -260,32 +258,27 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     // MARK: - Randomization Methods
     
-    // Bắt đầu random liên tục (không dừng)
     private func startContinuousRandomization() {
-        stopRandomization() // Đảm bảo dừng mọi random đang chạy
+        stopRandomization()
         
         isRandomizing = true
         collectionView?.isUserInteractionEnabled = false
         
-        // Tạo timer mới để random liên tục
         randomTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
             self?.randomizeNextImage()
         }
     }
     
-    // Bắt đầu random có giới hạn thời gian (khi đang ghi hình)
     private func startLimitedRandomization() {
-        stopRandomization() // Đảm bảo dừng mọi random đang chạy
+        stopRandomization()
         
         isRandomizing = true
         collectionView?.isUserInteractionEnabled = false
         
-        // Tạo timer mới random một lúc rồi dừng
         randomTimer = Timer.scheduledTimer(withTimeInterval: 0.15, repeats: true) { [weak self] _ in
             self?.randomizeNextImage()
         }
         
-        // Dừng sau 2 giây
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
             guard let self = self else { return }
             self.stopRandomization()
@@ -293,14 +286,12 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         }
     }
     
-    // Dừng mọi quá trình random
     private func stopRandomization() {
         randomTimer?.invalidate()
         randomTimer = nil
         isRandomizing = false
     }
     
-    // Phương thức random ảnh
     private func randomizeNextImage() {
         guard usedImageURLs.count < imageURLs.count else {
             print("yolo All images have been used. Stopping randomization.")
@@ -318,7 +309,6 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             return
         }
         
-        // Chọn ảnh ngẫu nhiên từ các URL có sẵn
         selectRandomImage(from: availableURLs)
     }
     
@@ -342,7 +332,6 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
                         self.currentImage = image ?? UIImage(systemName: "photo")
                     }
                     
-                    // Hiển thị ảnh ở giữa màn hình
                     self.imageOverlayView.image = self.currentImage
                     self.imageOverlayView.isHidden = false
                 }
@@ -451,28 +440,21 @@ extension RankingView: UICollectionViewDelegate, UICollectionViewDataSource {
             return
         }
         
-        // Cập nhật cell với ảnh hiện tại
         cell.bgImage.image = image
         cell.bgImage.isHidden = false
         cell.animateSelection()
         
-        // Thêm URL vào danh sách đã sử dụng
         usedImageURLs.append(imageURL)
         print("Added to used URLs: \(imageURL). Total used: \(usedImageURLs.count)/\(imageURLs.count)")
         
-        // Thông báo cho delegate
         delegate?.didSelectRankingCell(at: indexPath.row, image: image, imageURL: imageURL)
         
-        // Ẩn ảnh ở giữa màn hình
         imageOverlayView.isHidden = true
         
-        // Quản lý randomization dựa trên trạng thái ghi hình
         if isRecording {
-            // Nếu đang ghi hình, dừng randomization và sau đó bắt đầu lại với thời gian giới hạn
             stopRandomization()
             startLimitedRandomization()
         } else {
-            // Nếu không ghi hình, tiếp tục random liên tục
             startContinuousRandomization()
         }
     }
