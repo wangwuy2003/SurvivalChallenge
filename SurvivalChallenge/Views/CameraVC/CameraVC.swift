@@ -91,8 +91,12 @@ extension CameraVC {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if isInNaviStack && !isPop && filterType == .guess {
-            guessView.restoreCachedImages()
+        if isInNaviStack && !isPop {
+            if filterType == .guess {
+                guessView.restoreCachedImages()
+            } else if filterType == .ranking {
+                rankingView.restoreCachedImages()
+            }
         }
     }
     
@@ -185,6 +189,7 @@ extension CameraVC {
         resetMusicSelection()
         
         guessView.shouldKeepImagesOnReset = false
+        rankingView.shouldKeepImagesOnReset = false
         
         resetAllDetectionState()
         isInNaviStack = false
@@ -676,6 +681,10 @@ extension CameraVC {
                     self.guessView.shouldKeepImagesOnReset = true
                 }
                 
+                if self.filterType == .ranking {
+                    self.rankingView.shouldKeepImagesOnReset = true
+                }
+                
                 
                 let selectedMusicURL = await self.getSelectedMusicURL(from: self.music)
                 if let audioURL = selectedMusicURL {
@@ -954,6 +963,7 @@ extension CameraVC: AVCaptureVideoDataOutputSampleBufferDelegate {
 extension CameraVC {
     @IBAction func didTapBackBtn(_ sender: Any) {
         guessView.shouldKeepImagesOnReset = false
+        rankingView.shouldKeepImagesOnReset = false
         hasMusic = false
         music = nil
         stopAudio()
@@ -1039,9 +1049,15 @@ extension CameraVC {
             self.progressView.discardLastSegment()
             self.videoComposer.discardLastSegment()
             
-            if self.filterType == .guess {
+            switch self.filterType {
+            case .ranking:
+                self.rankingView.shouldKeepImagesOnReset = false
+                self.rankingView.resetState()
+            case .guess:
                 self.guessView.shouldKeepImagesOnReset = false
                 self.guessView.resetState()
+            default:
+                break
             }
         }))
         present(alert, animated: true, completion: nil)

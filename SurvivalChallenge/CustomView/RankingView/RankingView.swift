@@ -2,6 +2,7 @@ import UIKit
 import AVFoundation
 import SDWebImage
 import CoreImage
+import Vision
 
 protocol RankingViewDelegate: AnyObject {
     func didSelectRankingCell(at index: Int, image: UIImage?, imageURL: String?)
@@ -20,7 +21,6 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     private let videoQueue = DispatchQueue(label: "com.ranking.videoQueue", qos: .userInteractive)
     
     private let previewImageView = UIImageView()
-    
     private let imageOverlayView = UIImageView()
     
     private var imageURLs: [String] = []
@@ -32,7 +32,6 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     private var isRandomizing = false
     
     private var isActive = false
-    
     private var currentChallenge: SurvivalChallengeEntity?
     
     weak var delegate: RankingViewDelegate?
@@ -42,6 +41,18 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             updateLayout()
         }
     }
+    
+    private var faceDetectionRequest: VNDetectFaceRectanglesRequest?
+    private var faceDetectionTimer: Timer?
+    private var isFaceDetected = false
+    private var smoothedFaceRectangle: CGRect = .zero
+    private var lastFaceDetectionTime: Date?
+    private let faceLostThreshold: TimeInterval = 0.3
+    
+    private var displayLink: CADisplayLink?
+    
+    var shouldKeepImagesOnReset: Bool = false
+    private var cachedImageURLs: [String] = []
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -68,6 +79,167 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         contentView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
     }
     
+    // MARK: - Detect Face
+    private func setupFaceTracking() {
+        displayLink?.invalidate()
+        displayLink = CADisplayLink(target: self, selector: #selector(updateImagePosition))
+        displayLink?.add(to: .main, forMode: .common)
+    }
+    
+    @objc private func updateImagePosition() {
+        guard isFaceDetected else {
+            imageOverlayView.isHidden = true
+            return
+        }
+        
+        let faceCenterX = smoothedFaceRectangle.midX
+        let eyebrowsY = smoothedFaceRectangle.minY + (smoothedFaceRectangle.height * 0.05)
+        let imageSize = smoothedFaceRectangle.width * 0.8
+        
+        let targetRect = CGRect(
+            x: faceCenterX - imageSize / 2,
+            y: eyebrowsY - imageSize,
+            width: imageSize,
+            height: imageSize
+        )
+        
+        var currentDisplayRect = imageOverlayView.frame
+        if currentDisplayRect == .zero {
+            currentDisplayRect = targetRect
+            imageOverlayView.frame = targetRect
+            imageOverlayView.isHidden = false
+            return
+        }
+        
+        let easingFactor: CGFloat = 0.5 // Tăng để di chuyển nhanh hơn
+        currentDisplayRect.origin.x += (targetRect.origin.x - currentDisplayRect.origin.x) * easingFactor
+        currentDisplayRect.origin.y += (targetRect.origin.y - currentDisplayRect.origin.y) * easingFactor
+        currentDisplayRect.size.width += (targetRect.width - currentDisplayRect.width) * easingFactor
+        currentDisplayRect.size.height += (targetRect.height - currentDisplayRect.height) * easingFactor
+        
+        // Giới hạn vị trí trong bounds của view
+        let clampedX = max(0, min(currentDisplayRect.origin.x, bounds.width - currentDisplayRect.width))
+        let clampedY = max(0, min(currentDisplayRect.origin.y, bounds.height - currentDisplayRect.height))
+        currentDisplayRect.origin = CGPoint(x: clampedX, y: clampedY)
+        
+        imageOverlayView.frame = currentDisplayRect
+        imageOverlayView.isHidden = false
+    }
+    
+    private func setupFaceDetection() {
+        faceDetectionTimer?.invalidate()
+        smoothedFaceRectangle = .zero
+        lastFaceDetectionTime = nil
+        
+        faceDetectionRequest = VNDetectFaceRectanglesRequest { [weak self] (request, error) in
+            guard let self = self else { return }
+            
+            if let error = error {
+                print("Face detection error: \(error)")
+                return
+            }
+            
+            DispatchQueue.main.async {
+                guard let observations = request.results as? [VNFaceObservation],
+                      let face = observations.first else {
+                    if self.isFaceDetected {
+                        if let lastTime = self.lastFaceDetectionTime {
+                            if Date().timeIntervalSince(lastTime) > self.faceLostThreshold {
+                                self.isFaceDetected = false
+                                self.imageOverlayView.isHidden = true
+                                self.smoothedFaceRectangle = .zero
+                            }
+                        } else {
+                            self.lastFaceDetectionTime = Date()
+                        }
+                        return
+                    }
+                    return
+                }
+                
+                self.isFaceDetected = true
+                self.lastFaceDetectionTime = nil
+                self.processDetectedFace(face)
+            }
+        }
+        
+        faceDetectionTimer = Timer.scheduledTimer(withTimeInterval: 7, repeats: true) { [weak self] _ in
+            guard let self = self, self.isActive else { return }
+            
+            guard let image = self.previewImageView.image,
+                  let cgImage = image.cgImage else { return }
+            
+            let orientation: CGImagePropertyOrientation = self.isUsingFrontCamera ? .leftMirrored : .right
+            let handler = VNImageRequestHandler(cgImage: cgImage, orientation: orientation, options: [:])
+            
+            DispatchQueue.global(qos: .userInteractive).async {
+                do {
+                    if let request = self.faceDetectionRequest {
+                        try handler.perform([request])
+                    }
+                } catch {
+                    print("Error performing face detection: \(error)")
+                }
+            }
+        }
+    }
+    
+    private func processDetectedFace(_ face: VNFaceObservation) {
+        let faceBounds = face.boundingBox
+        
+        let viewWidth = bounds.width
+        let viewHeight = bounds.height
+        
+        let faceX = faceBounds.origin.x * viewWidth
+        let faceY = (1 - faceBounds.origin.y - faceBounds.height) * viewHeight
+        let faceWidth = faceBounds.width * viewWidth
+        let faceHeight = faceBounds.height * viewHeight
+        
+        let currentFaceRect = CGRect(x: faceX, y: faceY, width: faceWidth, height: faceHeight)
+        
+        // Làm mượt tọa độ khuôn mặt
+        let smoothFactor: CGFloat = 0.3 // Tăng để làm mượt mạnh hơn
+        if smoothedFaceRectangle == .zero {
+            smoothedFaceRectangle = currentFaceRect
+        } else {
+            smoothedFaceRectangle = CGRect(
+                x: smoothedFaceRectangle.origin.x * (1 - smoothFactor) + currentFaceRect.origin.x * smoothFactor,
+                y: smoothedFaceRectangle.origin.y * (1 - smoothFactor) + currentFaceRect.origin.y * smoothFactor,
+                width: smoothedFaceRectangle.width * (1 - smoothFactor) + currentFaceRect.width * smoothFactor,
+                height: smoothedFaceRectangle.height * (1 - smoothFactor) + currentFaceRect.height * smoothFactor
+            )
+        }
+    }
+    
+    private func getCurrentPixelBuffer() -> CVPixelBuffer? {
+        guard let image = previewImageView.image, let cgImage = image.cgImage else {
+            return nil
+        }
+        
+        var pixelBuffer: CVPixelBuffer?
+        let width = cgImage.width
+        let height = cgImage.height
+        
+        let attrs = [kCVPixelBufferCGImageCompatibilityKey: kCFBooleanTrue,
+             kCVPixelBufferCGBitmapContextCompatibilityKey: kCFBooleanTrue] as CFDictionary
+        
+        CVPixelBufferCreate(kCFAllocatorDefault,
+                            width, height,
+                            kCVPixelFormatType_32ARGB,
+                            attrs,
+                            &pixelBuffer)
+        
+        if let pixelBuffer = pixelBuffer {
+            let context = CIContext()
+            let ciImage = CIImage(cgImage: cgImage)
+            context.render(ciImage, to: pixelBuffer)
+            return pixelBuffer
+        }
+        
+        return nil
+    }
+    
+    // MARK: - Setup View
     private func setupView() {
         previewImageView.contentMode = .scaleAspectFill
         previewImageView.clipsToBounds = true
@@ -81,36 +253,21 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             previewImageView.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
         
+        insertSubview(imageOverlayView, aboveSubview: previewImageView)
+        
+        setupFaceDetection()
+        
         if let contentView = contentView {
             bringSubviewToFront(contentView)
         }
-        
-        if let collectionView = collectionView {
-            bringSubviewToFront(collectionView)
-        }
-        
-        if let stackView = stackView {
-            bringSubviewToFront(stackView)
-        }
     }
     
-    // Thiết lập imageOverlayView để hiển thị ảnh ở giữa màn hình
     private func setupImageOverlay() {
         imageOverlayView.contentMode = .scaleAspectFit
         imageOverlayView.clipsToBounds = true
         imageOverlayView.isHidden = true
-        
-        addSubview(imageOverlayView)
-        imageOverlayView.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            imageOverlayView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            imageOverlayView.topAnchor.constraint(equalTo: topAnchor, constant: 50), // Cách top 50
-            imageOverlayView.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.6),
-            imageOverlayView.heightAnchor.constraint(equalTo: imageOverlayView.widthAnchor, multiplier: 1.0)
-        ])
-        
-        bringSubviewToFront(imageOverlayView)
+        imageOverlayView.translatesAutoresizingMaskIntoConstraints = true
+        setupFaceTracking()
     }
     
     func setupCollectionView() {
@@ -127,38 +284,31 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     }
     
     deinit {
-//        deactivate()
+        faceDetectionTimer?.invalidate()
+        displayLink?.invalidate()
         print("⚙️ deinit \(Self.self)")
     }
     
     func activate() {
         isActive = true
         startContinuousRandomization()
+        setupFaceDetection()
     }
     
-//    func deactivate() {
-//        isActive = false
-//        if let videoOutput = videoOutput {
-//            videoOutput.setSampleBufferDelegate(nil, queue: nil)
-//        }
-//        stopRandomization()
-//        DispatchQueue.main.async {
-//            self.previewImageView.image = nil
-//            self.imageOverlayView.isHidden = true
-//        }
-//    }
-    
+    // MARK: - Record
     func startRecording() {
         isRecording = true
         stopRandomization()
         startLimitedRandomization()
     }
     
-    // Phương thức để dừng ghi hình
     func stopRecording() {
         isRecording = false
-        stopRandomization() // Dừng random hiện tại
-        startContinuousRandomization() // Bắt đầu lại random liên tục
+        stopRandomization()
+        
+        if !shouldKeepImagesOnReset {
+            startContinuousRandomization()
+        }
     }
     
     func setPreviewSession(_ session: AVCaptureSession?, _ isFrontCamera: Bool) {
@@ -194,25 +344,33 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             resetState()
             return
         }
+        
         currentChallenge = challenge
         imageURLs = Array(challenge.imgOptionUrl)
-        usedImageURLs = []
         
-        print("yolo Random image URLs for challenge '\(challenge.name)':")
-        imageURLs.forEach { url in
-            print("yolo - \(url)")
-        }
-        
-        for url in imageURLs {
-            if let url = URL(string: url) {
-                SDWebImageDownloader.shared.downloadImage(with: url, options: [.preloadAllFrames, .scaleDownLargeImages], progress: nil) { (image, _, error, _) in
-                    if let error = error {
-                        print("Failed to preload image \(url): \(error.localizedDescription)")
-                    } else {
-                        print("Preloaded image: \(url)")
+        // Only reset usedImageURLs if not preserving state
+        if !shouldKeepImagesOnReset {
+            usedImageURLs = []
+            
+            print("yolo Random image URLs for challenge '\(challenge.name)':")
+            imageURLs.forEach { url in
+                print("yolo - \(url)")
+            }
+            
+            for url in imageURLs {
+                if let url = URL(string: url) {
+                    SDWebImageDownloader.shared.downloadImage(with: url, options: [.preloadAllFrames, .scaleDownLargeImages], progress: nil) { (image, _, error, _) in
+                        if let error = error {
+                            print("Failed to preload image \(url): \(error.localizedDescription)")
+                        } else {
+                            print("Preloaded image: \(url)")
+                        }
                     }
                 }
             }
+        } else {
+            // If should keep images, preserve the existing usedImageURLs
+            print("yolo Preserving used images for challenge '\(challenge.name)'")
         }
         
         DispatchQueue.main.async { [weak self] in
@@ -224,20 +382,47 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     }
     
     func resetState() {
-        imageURLs = []
-        usedImageURLs = []
-        currentImage = nil
-        currentImageURL = nil
-        currentChallenge = nil
-        stopRandomization()
-        
-        DispatchQueue.main.async { [weak self] in
-            self?.imageOverlayView.isHidden = true
-            self?.collectionView?.reloadData()
-            self?.collectionView?.isUserInteractionEnabled = false
-            self?.updateLayout()
+        if !shouldKeepImagesOnReset {
+            imageURLs = []
+            usedImageURLs = []
+            currentImage = nil
+            currentImageURL = nil
+            currentChallenge = nil
+            stopRandomization()
+            
+            DispatchQueue.main.async { [weak self] in
+                self?.imageOverlayView.isHidden = true
+                self?.collectionView?.reloadData()
+                self?.collectionView?.isUserInteractionEnabled = false
+                self?.updateLayout()
+            }
+            print("yolo RankingView state reset (full)")
+        } else {
+            // Only stop randomization but keep state
+            stopRandomization()
+            
+            DispatchQueue.main.async { [weak self] in
+                self?.imageOverlayView.isHidden = true
+                // Make sure the collection view is still user interactive
+                self?.collectionView?.isUserInteractionEnabled = true
+            }
+            
+            print("yolo RankingView state maintained - keeping \(usedImageURLs.count) images")
         }
-        print("yolo RankingView state reset")
+    }
+    
+    func restoreCachedImages() {
+        if shouldKeepImagesOnReset && !usedImageURLs.isEmpty {
+            print("yolo Restoring cached RankingView images - total images: \(usedImageURLs.count)")
+            
+            // Enable user interaction with the collection view
+            collectionView?.isUserInteractionEnabled = true
+            
+            // Reload the collection view to show the cached images
+            DispatchQueue.main.async { [weak self] in
+                self?.collectionView?.reloadData()
+            }
+        }
     }
     
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
@@ -253,10 +438,16 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             DispatchQueue.main.async { [weak self] in
                 self?.previewImageView.image = uiImage
             }
+            
+            let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: isUsingFrontCamera ? .leftMirrored : .right)
+            
+            do {
+                try imageRequestHandler.perform([faceDetectionRequest].compactMap { $0 })
+            } catch {
+                print("Error performing face detection: \(error)")
+            }
         }
     }
-    
-    // MARK: - Randomization Methods
     
     private func startContinuousRandomization() {
         stopRandomization()
@@ -294,7 +485,7 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     private func randomizeNextImage() {
         guard usedImageURLs.count < imageURLs.count else {
-            print("yolo All images have been used. Stopping randomization.")
+            print("All images have been used. Stopping randomization.")
             currentImage = nil
             currentImageURL = nil
             stopRandomization()
@@ -309,7 +500,13 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             return
         }
         
-        selectRandomImage(from: availableURLs)
+        if !isFaceDetected {
+            imageOverlayView.isHidden = true
+            selectRandomImage(from: availableURLs)
+        } else {
+            selectRandomImage(from: availableURLs)
+            imageOverlayView.isHidden = false
+        }
     }
     
     private func selectRandomImage(from availableURLs: [String]) {
@@ -333,7 +530,7 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
                     }
                     
                     self.imageOverlayView.image = self.currentImage
-                    self.imageOverlayView.isHidden = false
+                    self.imageOverlayView.isHidden = !self.isFaceDetected
                 }
             }
         } else {

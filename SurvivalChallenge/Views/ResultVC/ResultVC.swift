@@ -20,6 +20,7 @@ class ResultVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupViews()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -44,6 +45,8 @@ class ResultVC: UIViewController {
     }
     
     @IBAction func didTapShareBtn(_ sender: Any) {
+        guard let videoURL = videoURL else { return }
+        self.share(items: [videoURL])
     }
     
     @IBAction func didTapSaveBtn(_ sender: Any) {
