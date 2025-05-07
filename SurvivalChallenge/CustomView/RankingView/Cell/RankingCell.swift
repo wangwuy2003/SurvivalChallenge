@@ -8,6 +8,12 @@
 import UIKit
 import Stevia
 
+struct RankingCellState {
+    var image: UIImage?
+    var imageURL: String?
+    var isNumberMoved: Bool
+}
+
 class RankingCell: UICollectionViewCell {
 
     @IBOutlet weak var bgImage: UIImageView!

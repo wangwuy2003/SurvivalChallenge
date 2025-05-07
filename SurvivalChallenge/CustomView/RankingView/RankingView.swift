@@ -53,6 +53,7 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     var shouldKeepImagesOnReset: Bool = false
     private var cachedImageURLs: [String] = []
+    private var cellStates: [RankingCellState] = []
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -94,7 +95,7 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         
         let faceCenterX = smoothedFaceRectangle.midX
         let eyebrowsY = smoothedFaceRectangle.minY + (smoothedFaceRectangle.height * 0.05)
-        let imageSize = smoothedFaceRectangle.width * 0.8
+        let imageSize = smoothedFaceRectangle.width * 0.9
         
         let targetRect = CGRect(
             x: faceCenterX - imageSize / 2,
@@ -163,7 +164,7 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             }
         }
         
-        faceDetectionTimer = Timer.scheduledTimer(withTimeInterval: 7, repeats: true) { [weak self] _ in
+        faceDetectionTimer = Timer.scheduledTimer(withTimeInterval: 8, repeats: true) { [weak self] _ in
             guard let self = self, self.isActive else { return }
             
             guard let image = self.previewImageView.image,
@@ -299,7 +300,12 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     func startRecording() {
         isRecording = true
         stopRandomization()
-        startLimitedRandomization()
+        
+        if usedImageURLs.count < imageURLs.count {
+            startLimitedRandomization()
+        } else {
+            print("yolo All images have been used. Cannot continue randomization.")
+        }
     }
     
     func stopRecording() {
@@ -388,6 +394,7 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             currentImage = nil
             currentImageURL = nil
             currentChallenge = nil
+            cellStates = []
             stopRandomization()
             
             DispatchQueue.main.async { [weak self] in
@@ -396,31 +403,24 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
                 self?.collectionView?.isUserInteractionEnabled = false
                 self?.updateLayout()
             }
-            print("yolo RankingView state reset (full)")
+            print("RankingView state reset (full)")
         } else {
-            // Only stop randomization but keep state
             stopRandomization()
             
             DispatchQueue.main.async { [weak self] in
                 self?.imageOverlayView.isHidden = true
-                // Make sure the collection view is still user interactive
                 self?.collectionView?.isUserInteractionEnabled = true
             }
             
-            print("yolo RankingView state maintained - keeping \(usedImageURLs.count) images")
+            print("RankingView state maintained - keeping \(usedImageURLs.count) images")
         }
     }
     
     func restoreCachedImages() {
-        if shouldKeepImagesOnReset && !usedImageURLs.isEmpty {
-            print("yolo Restoring cached RankingView images - total images: \(usedImageURLs.count)")
-            
-            // Enable user interaction with the collection view
-            collectionView?.isUserInteractionEnabled = true
-            
-            // Reload the collection view to show the cached images
+        if shouldKeepImagesOnReset && !cellStates.isEmpty {
+            print("Restoring cached RankingView states - total cells: \(cellStates.count)")
             DispatchQueue.main.async { [weak self] in
-                self?.collectionView?.reloadData()
+                self?.collectionView.reloadData()
             }
         }
     }
@@ -450,6 +450,11 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     }
     
     private func startContinuousRandomization() {
+        guard usedImageURLs.count < imageURLs.count else {
+            print("All images have been used. Cannot start randomization.")
+            stopRandomization()
+            return
+        }
         stopRandomization()
         
         isRandomizing = true
@@ -461,6 +466,11 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     }
     
     private func startLimitedRandomization() {
+        guard usedImageURLs.count < imageURLs.count else {
+            print("All images have been used. Cannot start randomization.")
+            stopRandomization()
+            return
+        }
         stopRandomization()
         
         isRandomizing = true
@@ -490,6 +500,7 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             currentImageURL = nil
             stopRandomization()
             imageOverlayView.isHidden = true
+            collectionView.isUserInteractionEnabled = false
             return
         }
         
@@ -614,46 +625,69 @@ extension RankingView: UICollectionViewDelegate, UICollectionViewDataSource {
         }
         let rankingCellStyle = designToRankingMap[designType] ?? .case1
         cell.configureCell(style: rankingCellStyle, index: indexPath.row)
-        
-        if indexPath.row < usedImageURLs.count {
-            if let url = URL(string: usedImageURLs[indexPath.row]) {
-                cell.bgImage.sd_setImage(with: url, placeholderImage: UIImage(systemName: "photo"))
-                cell.bgImage.isHidden = false
+
+        if indexPath.row < cellStates.count {
+            let state = cellStates[indexPath.row]
+            cell.bgImage.image = state.image
+            cell.bgImage.isHidden = state.image == nil
+            if state.isNumberMoved {
+                cell.numberLB.transform = CGAffineTransform(translationX: -cell.bounds.width + 5, y: 0)
+            } else {
+                cell.numberLB.transform = .identity
             }
         } else {
-            cell.bgImage.image = UIImage(named: "squidgame")
-            cell.bgImage.isHidden = true
+            cell.prepareForReuse()
         }
-        
+
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         print("Select row at: \(indexPath.row)")
-        guard let cell = collectionView.cellForItem(at: indexPath) as? RankingCell,
-              let image = currentImage,
-              let imageURL = currentImageURL else {
-            print("No valid image or cell at index \(indexPath.row)")
-            return
-        }
-        
-        cell.bgImage.image = image
-        cell.bgImage.isHidden = false
-        cell.animateSelection()
-        
-        usedImageURLs.append(imageURL)
-        print("Added to used URLs: \(imageURL). Total used: \(usedImageURLs.count)/\(imageURLs.count)")
-        
-        delegate?.didSelectRankingCell(at: indexPath.row, image: image, imageURL: imageURL)
-        
-        imageOverlayView.isHidden = true
-        
-        if isRecording {
-            stopRandomization()
-            startLimitedRandomization()
-        } else {
-            startContinuousRandomization()
-        }
+            
+            // Check if the cell already has an image
+            if indexPath.row < cellStates.count && cellStates[indexPath.row].image != nil {
+                print("Cell at index \(indexPath.row) already has an image. Disabling further selection.")
+                return
+            }
+            
+            guard let cell = collectionView.cellForItem(at: indexPath) as? RankingCell,
+                  let image = currentImage,
+                  let imageURL = currentImageURL else {
+                print("No valid image or cell at index \(indexPath.row)")
+                return
+            }
+            
+            cell.bgImage.image = image
+            cell.bgImage.isHidden = false
+            cell.animateSelection()
+            
+            // Save the state of the cell at the correct indexPath.row
+            if indexPath.row < cellStates.count {
+                cellStates[indexPath.row] = RankingCellState(image: image, imageURL: imageURL, isNumberMoved: true)
+            } else {
+                // Ensure the `cellStates` array has enough elements
+                while cellStates.count <= indexPath.row {
+                    cellStates.append(RankingCellState(image: nil, imageURL: nil, isNumberMoved: false))
+                }
+                cellStates[indexPath.row] = RankingCellState(image: image, imageURL: imageURL, isNumberMoved: true)
+            }
+            
+            usedImageURLs.append(imageURL)
+            print("Added to used URLs: \(imageURL). Total used: \(usedImageURLs.count)/\(imageURLs.count)")
+            delegate?.didSelectRankingCell(at: indexPath.row, image: image, imageURL: imageURL)
+            imageOverlayView.isHidden = true
+            if isRecording {
+                stopRandomization()
+                startLimitedRandomization()
+            } else {
+                startContinuousRandomization()
+            }
+            
+            if usedImageURLs.count == imageURLs.count {
+                print("All elements have been set. Disabling interaction.")
+                collectionView.isUserInteractionEnabled = false
+            }
     }
 }
 

@@ -190,7 +190,7 @@ extension CameraVC {
         
         guessView.shouldKeepImagesOnReset = false
         rankingView.shouldKeepImagesOnReset = false
-        
+    
         resetAllDetectionState()
         isInNaviStack = false
         isPop = false
@@ -620,6 +620,8 @@ extension CameraVC {
             self.updateTimeLabel()
         }
         
+        rankingView.startRecording()
+        
         if music != nil {
             Task { [weak self] in
                 guard let self = self else { return }
@@ -1046,8 +1048,8 @@ extension CameraVC {
         let alert = UIAlertController(title: "Discard your video?", message: "", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         alert.addAction(UIAlertAction(title: "Discard", style: .destructive, handler: { _ in
-            self.progressView.discardLastSegment()
-            self.videoComposer.discardLastSegment()
+            self.progressView.discardAllSegment()
+            self.videoComposer.clearSegments()
             
             switch self.filterType {
             case .ranking:
@@ -1059,6 +1061,8 @@ extension CameraVC {
             default:
                 break
             }
+            
+            self.updateActiveView()
         }))
         present(alert, animated: true, completion: nil)
     }
@@ -1089,6 +1093,15 @@ extension CameraVC: FilterModeDelegate {
         self.currentChallenge = challenge
         
         if isChangingFilterType {
+            switch self.filterType {
+            case .ranking:
+                self.rankingView.resetState()
+            case .guess:
+                self.guessView.resetState()
+            default:
+                break
+            }
+            
             // Add a fade transition when changing filter types
             UIView.animate(withDuration: 0.3, animations: {
                 // Fade out current view
