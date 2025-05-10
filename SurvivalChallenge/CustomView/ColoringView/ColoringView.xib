@@ -8,31 +8,73 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ColoringView" customModule="SurvivalChallenge" customModuleProvider="target">
+            <connections>
+                <outlet property="bottomPaintBtn" destination="qba-VU-6rA" id="7IX-LV-X2e"/>
+                <outlet property="contentView" destination="iN0-l3-epB" id="cuf-Tw-crA"/>
+                <outlet property="leftPaintBtn" destination="dMT-xv-Zjn" id="N0M-HE-Ecz"/>
+                <outlet property="paintImageView" destination="eJC-It-Juv" id="3XM-mS-4PI"/>
+                <outlet property="paintView" destination="zfM-9s-dUB" id="Nch-h8-lcP"/>
+                <outlet property="rightPaintBtn" destination="sX6-6T-zIG" id="oVR-fB-WvI"/>
+                <outlet property="targetImageView" destination="2Sa-aD-u1D" id="h1w-iH-dQM"/>
+                <outlet property="topPaintBtn" destination="Rph-B3-pVb" id="ppY-HM-w0b"/>
+                <outlet property="type2BlackBottomBtn" destination="Cj4-mC-aIK" id="nDQ-nU-tR4"/>
+                <outlet property="type2BlackRightBtn" destination="JSK-7W-KOO" id="nxs-fp-k6D"/>
+                <outlet property="type2BlackTopBtn" destination="rZk-T1-QvD" id="ngv-Ib-sg0"/>
+                <outlet property="type2BottomBtn" destination="rGF-Qg-JtO" id="uiR-fF-405"/>
+                <outlet property="type2OrangeRightBtn" destination="qYG-kw-DzR" id="WFe-ih-pAi"/>
+                <outlet property="type2PurpleLeftBtn" destination="5qb-bX-r2w" id="uBu-ld-9RZ"/>
+                <outlet property="type2YelloLeftBtn" destination="Eih-ps-zcK" id="LJP-kn-dtY"/>
+                <outlet property="type3BottomBtn" destination="6VY-Fe-fhk" id="Q1i-CO-zZh"/>
+                <outlet property="type3LeftBtn" destination="Zjv-wh-eds" id="isj-31-Dqr"/>
+                <outlet property="type3RightBtn" destination="UfO-HS-AsM" id="l2g-P4-Ael"/>
+                <outlet property="type3TopBtn" destination="ECH-fM-KCj" id="xoF-4p-Ypu"/>
+                <outlet property="type4BlueBottomBtn" destination="YKO-hc-4u0" id="17c-i0-lLZ"/>
+                <outlet property="type4GreenLeftBtn" destination="xw6-5B-hLC" id="Wuk-a6-HLR"/>
+                <outlet property="type4RedBottomBtn" destination="poc-1W-4z6" id="qhz-X0-hIJ"/>
+                <outlet property="type4YellowLeftBtn" destination="kqU-Z5-ZNG" id="AH1-an-RgX"/>
+                <outlet property="type5GreenBottomBtn" destination="8ve-td-uRI" id="Fan-yX-k4u"/>
+                <outlet property="type5OrangeLeftBtn" destination="cys-OW-oUb" id="tKH-vC-u12"/>
+                <outlet property="type5PurpleBottomBtn" destination="m4a-Lt-Amu" id="1li-q7-Dgm"/>
+            </connections>
+        </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="ColoringView" customModule="SurvivalChallenge" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="393" height="451"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="target_ic" translatesAutoresizingMaskIntoConstraints="NO" id="z0V-PT-c7h">
-                    <rect key="frame" x="20" y="5" width="94" height="27"/>
+                    <rect key="frame" x="20" y="90" width="94" height="27"/>
                 </imageView>
                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="2Sa-aD-u1D" userLabel="Target Image View">
-                    <rect key="frame" x="16" y="41" width="100" height="100"/>
+                    <rect key="frame" x="16" y="126" width="100" height="100"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="100" id="Tmv-49-FML"/>
                         <constraint firstAttribute="width" constant="100" id="cFE-cC-xVQ"/>
                     </constraints>
                 </imageView>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="paint_1_image" translatesAutoresizingMaskIntoConstraints="NO" id="eJC-It-Juv" userLabel="Paint Image">
-                    <rect key="frame" x="96.666666666666686" y="164" width="200" height="200"/>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zfM-9s-dUB" userLabel="Paint View">
+                    <rect key="frame" x="69.666666666666686" y="311.66666666666669" width="254" height="254.00000000000006"/>
+                    <subviews>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="paint_2_image" translatesAutoresizingMaskIntoConstraints="NO" id="eJC-It-Juv" userLabel="Paint Image">
+                            <rect key="frame" x="0.0" y="0.0" width="254" height="254"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="254" id="Kpa-IM-Tgv"/>
+                                <constraint firstAttribute="width" constant="254" id="VWa-qI-oI4"/>
+                            </constraints>
+                        </imageView>
+                    </subviews>
                     <constraints>
-                        <constraint firstAttribute="width" constant="200" id="a7w-fj-SNJ"/>
-                        <constraint firstAttribute="height" constant="200" id="cK3-HB-zwx"/>
+                        <constraint firstItem="eJC-It-Juv" firstAttribute="top" secondItem="zfM-9s-dUB" secondAttribute="top" id="FRJ-tM-G5d"/>
+                        <constraint firstAttribute="width" constant="254" id="Hh9-lR-qxh"/>
+                        <constraint firstAttribute="height" constant="254" id="JHr-2s-ZJe"/>
+                        <constraint firstAttribute="trailing" secondItem="eJC-It-Juv" secondAttribute="trailing" id="MJq-Jw-AdK"/>
+                        <constraint firstAttribute="bottom" secondItem="eJC-It-Juv" secondAttribute="bottom" id="nSd-G6-PIO"/>
+                        <constraint firstItem="eJC-It-Juv" firstAttribute="leading" secondItem="zfM-9s-dUB" secondAttribute="leading" id="vHj-eE-Aiw"/>
                     </constraints>
-                </imageView>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sX6-6T-zIG">
-                    <rect key="frame" x="306.66666666666669" y="239" width="50" height="50"/>
+                </view>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sX6-6T-zIG" userLabel="Thanos Right Button">
+                    <rect key="frame" x="333.66666666666669" y="358" width="50" height="50"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="50" id="EIG-eI-K9K"/>
                         <constraint firstAttribute="width" constant="50" id="npV-jL-Z1U"/>
@@ -40,8 +82,8 @@
                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                     <state key="normal" image="paint_roller_right_ic"/>
                 </button>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dMT-xv-Zjn">
-                    <rect key="frame" x="36.666666666666664" y="239" width="49.999999999999993" height="50"/>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dMT-xv-Zjn" userLabel="Thanos Left Button">
+                    <rect key="frame" x="9.6666666666666643" y="468" width="50" height="50"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="50" id="T7S-2r-ThE"/>
                         <constraint firstAttribute="width" constant="50" id="mk7-Ys-f5Y"/>
@@ -49,8 +91,8 @@
                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                     <state key="normal" image="paint_roller_left_ic"/>
                 </button>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qba-VU-6rA">
-                    <rect key="frame" x="171.66666666666666" y="374" width="50" height="50"/>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qba-VU-6rA" userLabel="Thanos Bottom Button">
+                    <rect key="frame" x="171.66666666666666" y="575.66666666666663" width="50" height="50"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="50" id="etX-aJ-oCU"/>
                         <constraint firstAttribute="height" constant="50" id="tP7-MC-5R7"/>
@@ -58,8 +100,8 @@
                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                     <state key="normal" image="paint_roller_bottom_ic"/>
                 </button>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rph-B3-pVb">
-                    <rect key="frame" x="171.66666666666666" y="104" width="50" height="50"/>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rph-B3-pVb" userLabel="Thanos Top Button">
+                    <rect key="frame" x="171.66666666666666" y="251.66666666666663" width="50" height="50"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="50" id="7Bk-9E-i30"/>
                         <constraint firstAttribute="width" constant="50" id="AnO-xY-PFZ"/>
@@ -67,34 +109,227 @@
                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                     <state key="normal" image="paint_roller_top_ic"/>
                 </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ECH-fM-KCj" userLabel="456 Top Button">
+                    <rect key="frame" x="171.66666666666666" y="251.66666666666663" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="50" id="7wC-BX-f6K"/>
+                        <constraint firstAttribute="height" constant="50" id="Xpi-14-jaO"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="paint_roller_top_ic"/>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6VY-Fe-fhk" userLabel="456 Bottom Button">
+                    <rect key="frame" x="171.66666666666666" y="575.66666666666663" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="50" id="Mpo-5h-iYW"/>
+                        <constraint firstAttribute="height" constant="50" id="gmn-HH-qn2"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="paint_roller_bottom_ic"/>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UfO-HS-AsM" userLabel="456 Right Button">
+                    <rect key="frame" x="333.66666666666669" y="368" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="50" id="0JN-J2-VZL"/>
+                        <constraint firstAttribute="height" constant="50" id="Umk-x4-Ktn"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="paint_roller_right_ic"/>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zjv-wh-eds" userLabel="456 Left Button">
+                    <rect key="frame" x="9.6666666666666643" y="468" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="WCh-ku-h8i"/>
+                        <constraint firstAttribute="width" constant="50" id="nkF-lI-TF3"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="paint_roller_left_ic"/>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kqU-Z5-ZNG" userLabel="Goon Yellow Left Button">
+                    <rect key="frame" x="9.6666666666666643" y="468" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="TNZ-S7-tOB"/>
+                        <constraint firstAttribute="width" constant="50" id="hjR-0e-ubc"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="paint_roller_left_ic"/>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xw6-5B-hLC" userLabel="Goon Green Left Button">
+                    <rect key="frame" x="9.6666666666666643" y="358" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="50" id="c5P-Yy-IxN"/>
+                        <constraint firstAttribute="height" constant="50" id="twK-gG-W7A"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="paint_roller_left_ic"/>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YKO-hc-4u0" userLabel="Goon Blue Bottom Button">
+                    <rect key="frame" x="171.66666666666666" y="575.66666666666663" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="Rat-tc-42j"/>
+                        <constraint firstAttribute="width" constant="50" id="Ur1-fk-9kx"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="paint_roller_bottom_ic"/>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="poc-1W-4z6" userLabel="Goon Red Bottom Button">
+                    <rect key="frame" x="243.66666666666663" y="575.66666666666663" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="UFc-ny-da5"/>
+                        <constraint firstAttribute="width" constant="50" id="k2r-4r-yQW"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="paint_roller_bottom_ic"/>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8ve-td-uRI" userLabel="Section Green Bottom Button">
+                    <rect key="frame" x="231.66666666666663" y="575.66666666666663" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="DnO-i0-gVn"/>
+                        <constraint firstAttribute="width" constant="50" id="uML-gn-9Tu"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="paint_roller_bottom_ic"/>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cys-OW-oUb" userLabel="Section Orange Left Button">
+                    <rect key="frame" x="9.6666666666666643" y="358" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="KdP-Gb-fpT"/>
+                        <constraint firstAttribute="width" constant="50" id="lkq-AP-cpj"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="paint_roller_left_ic"/>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m4a-Lt-Amu" userLabel="Section Purple Bottom Button">
+                    <rect key="frame" x="113.66666666666669" y="575.66666666666663" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="6jr-0Y-WAs"/>
+                        <constraint firstAttribute="width" constant="50" id="N5L-on-HNs"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="paint_roller_bottom_ic"/>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rZk-T1-QvD" userLabel="Doll Black Top Button">
+                    <rect key="frame" x="171.66666666666666" y="251.66666666666663" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="9Nf-4Y-LSw"/>
+                        <constraint firstAttribute="width" constant="50" id="or3-Mo-gWb"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="paint_roller_top_ic"/>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rGF-Qg-JtO" userLabel="Doll Bottom Button">
+                    <rect key="frame" x="171.66666666666666" y="575.66666666666663" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="50" id="bwa-Tg-toJ"/>
+                        <constraint firstAttribute="height" constant="50" id="nKi-Go-IvO"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="paint_roller_bottom_ic"/>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5qb-bX-r2w" userLabel="Doll Purple Left Button">
+                    <rect key="frame" x="9.6666666666666643" y="508" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="50" id="3FK-Qu-yGA"/>
+                        <constraint firstAttribute="height" constant="50" id="YmA-IW-UQW"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="paint_roller_left_ic"/>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Cj4-mC-aIK" userLabel="Doll Black Bottom Button">
+                    <rect key="frame" x="278" y="575.66666666666663" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="fMj-pq-XPo"/>
+                        <constraint firstAttribute="width" constant="50" id="mRC-fl-DoS"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="paint_roller_bottom_ic"/>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Eih-ps-zcK" userLabel="Doll Yellow Left Button">
+                    <rect key="frame" x="9.6666666666666643" y="418" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="50" id="NhC-fO-1uE"/>
+                        <constraint firstAttribute="height" constant="50" id="UFN-uG-59G"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="paint_roller_left_ic"/>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qYG-kw-DzR" userLabel="Doll Orange Right Button">
+                    <rect key="frame" x="333.66666666666669" y="441" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="0X8-Es-YaR"/>
+                        <constraint firstAttribute="width" constant="50" id="vOg-6N-VQQ"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="paint_roller_right_ic"/>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JSK-7W-KOO" userLabel="Doll Black Right Button">
+                    <rect key="frame" x="333.66666666666669" y="318" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="ost-QH-WjT"/>
+                        <constraint firstAttribute="width" constant="50" id="qF9-4x-oTe"/>
+                    </constraints>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                    <state key="normal" image="paint_roller_right_ic"/>
+                </button>
             </subviews>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <constraints>
-                <constraint firstItem="Rph-B3-pVb" firstAttribute="centerX" secondItem="eJC-It-Juv" secondAttribute="centerX" id="29R-4Y-klh"/>
-                <constraint firstItem="dMT-xv-Zjn" firstAttribute="centerY" secondItem="eJC-It-Juv" secondAttribute="centerY" id="46s-av-TKg"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="UfO-HS-AsM" secondAttribute="bottom" constant="400" id="0GL-hX-haQ"/>
+                <constraint firstItem="zfM-9s-dUB" firstAttribute="leading" secondItem="Eih-ps-zcK" secondAttribute="trailing" constant="10" id="0vS-S3-Iat"/>
+                <constraint firstItem="zfM-9s-dUB" firstAttribute="leading" secondItem="Zjv-wh-eds" secondAttribute="trailing" constant="10" id="16j-8F-a3I"/>
+                <constraint firstItem="8ve-td-uRI" firstAttribute="leading" secondItem="qba-VU-6rA" secondAttribute="trailing" constant="10" id="1t2-mu-FDn"/>
+                <constraint firstItem="YKO-hc-4u0" firstAttribute="centerX" secondItem="eJC-It-Juv" secondAttribute="centerX" id="3aL-kl-9ee"/>
+                <constraint firstItem="qYG-kw-DzR" firstAttribute="leading" secondItem="zfM-9s-dUB" secondAttribute="trailing" constant="10" id="3k6-o0-Waq"/>
+                <constraint firstItem="poc-1W-4z6" firstAttribute="leading" secondItem="YKO-hc-4u0" secondAttribute="trailing" constant="22" id="5ao-iO-QIM"/>
+                <constraint firstItem="eJC-It-Juv" firstAttribute="centerX" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="60o-Xe-hWR"/>
+                <constraint firstItem="poc-1W-4z6" firstAttribute="top" secondItem="zfM-9s-dUB" secondAttribute="bottom" constant="10" id="6W4-33-6IL"/>
+                <constraint firstItem="dMT-xv-Zjn" firstAttribute="top" secondItem="Eih-ps-zcK" secondAttribute="bottom" id="7bE-xP-0OJ"/>
+                <constraint firstItem="zfM-9s-dUB" firstAttribute="leading" secondItem="xw6-5B-hLC" secondAttribute="trailing" constant="10" id="8gu-Xu-Cnz"/>
+                <constraint firstItem="qba-VU-6rA" firstAttribute="leading" secondItem="m4a-Lt-Amu" secondAttribute="trailing" constant="8" id="8l0-ce-RNH"/>
+                <constraint firstItem="dMT-xv-Zjn" firstAttribute="top" secondItem="cys-OW-oUb" secondAttribute="bottom" constant="60" id="9Ba-TA-qgR"/>
+                <constraint firstItem="eJC-It-Juv" firstAttribute="centerY" secondItem="vUN-kp-3ea" secondAttribute="centerY" id="9qF-EG-Qqb"/>
+                <constraint firstItem="8ve-td-uRI" firstAttribute="top" secondItem="zfM-9s-dUB" secondAttribute="bottom" constant="10" id="BnK-MT-knR"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="Zjv-wh-eds" secondAttribute="bottom" constant="300" id="En2-dd-c3L"/>
                 <constraint firstItem="2Sa-aD-u1D" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="16" id="Fd6-4S-RQz"/>
-                <constraint firstItem="qba-VU-6rA" firstAttribute="centerX" secondItem="eJC-It-Juv" secondAttribute="centerX" id="Ozd-T4-Ieq"/>
-                <constraint firstItem="sX6-6T-zIG" firstAttribute="leading" secondItem="eJC-It-Juv" secondAttribute="trailing" constant="10" id="PG6-MO-5HH"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="dMT-xv-Zjn" secondAttribute="bottom" constant="300" id="FrH-kt-Ahe"/>
+                <constraint firstItem="UfO-HS-AsM" firstAttribute="leading" secondItem="zfM-9s-dUB" secondAttribute="trailing" constant="10" id="GYX-4P-v0b"/>
+                <constraint firstItem="qYG-kw-DzR" firstAttribute="top" secondItem="UfO-HS-AsM" secondAttribute="bottom" constant="23" id="IhN-8w-hPw"/>
+                <constraint firstItem="rGF-Qg-JtO" firstAttribute="centerX" secondItem="eJC-It-Juv" secondAttribute="centerX" id="JNl-fl-KI5"/>
+                <constraint firstItem="zfM-9s-dUB" firstAttribute="top" secondItem="ECH-fM-KCj" secondAttribute="bottom" constant="10" id="Km2-sJ-16O"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="sX6-6T-zIG" secondAttribute="bottom" constant="410" id="Nly-x2-nPa"/>
+                <constraint firstItem="ECH-fM-KCj" firstAttribute="centerX" secondItem="eJC-It-Juv" secondAttribute="centerX" id="P57-ai-1pO"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="Cj4-mC-aIK" secondAttribute="trailing" constant="65" id="PZu-ED-09F"/>
+                <constraint firstItem="Rph-B3-pVb" firstAttribute="centerX" secondItem="eJC-It-Juv" secondAttribute="centerX" id="Py9-l2-sgX"/>
+                <constraint firstItem="zfM-9s-dUB" firstAttribute="leading" secondItem="dMT-xv-Zjn" secondAttribute="trailing" constant="10" id="QaE-e4-dAh"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="5qb-bX-r2w" secondAttribute="bottom" constant="260" id="QcJ-zO-Tbi"/>
+                <constraint firstItem="Cj4-mC-aIK" firstAttribute="top" secondItem="zfM-9s-dUB" secondAttribute="bottom" constant="10" id="Tuw-1h-2es"/>
                 <constraint firstItem="z0V-PT-c7h" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="20" id="Um4-bC-HTs"/>
-                <constraint firstItem="eJC-It-Juv" firstAttribute="top" secondItem="Rph-B3-pVb" secondAttribute="bottom" constant="10" id="YRs-Vr-cZs"/>
+                <constraint firstItem="sX6-6T-zIG" firstAttribute="leading" secondItem="zfM-9s-dUB" secondAttribute="trailing" constant="10" id="Wfc-LE-Ja4"/>
+                <constraint firstItem="6VY-Fe-fhk" firstAttribute="centerX" secondItem="eJC-It-Juv" secondAttribute="centerX" id="XIS-Lm-COG"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="kqU-Z5-ZNG" secondAttribute="bottom" constant="300" id="XVi-Zl-ZQG"/>
                 <constraint firstItem="2Sa-aD-u1D" firstAttribute="top" secondItem="z0V-PT-c7h" secondAttribute="bottom" constant="9" id="Zim-NE-K5z"/>
-                <constraint firstItem="sX6-6T-zIG" firstAttribute="centerY" secondItem="eJC-It-Juv" secondAttribute="centerY" id="cTK-lh-L2c"/>
-                <constraint firstItem="eJC-It-Juv" firstAttribute="top" secondItem="2Sa-aD-u1D" secondAttribute="bottom" constant="23" id="e7L-gN-KJH"/>
-                <constraint firstItem="qba-VU-6rA" firstAttribute="top" secondItem="eJC-It-Juv" secondAttribute="bottom" constant="10" id="keH-ia-gzT"/>
-                <constraint firstItem="eJC-It-Juv" firstAttribute="centerX" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="l2C-y1-EDk"/>
-                <constraint firstItem="z0V-PT-c7h" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="5" id="oni-OB-5S4"/>
-                <constraint firstItem="eJC-It-Juv" firstAttribute="leading" secondItem="dMT-xv-Zjn" secondAttribute="trailing" constant="10" id="rqP-PQ-ZPY"/>
+                <constraint firstItem="6VY-Fe-fhk" firstAttribute="top" secondItem="zfM-9s-dUB" secondAttribute="bottom" constant="10" id="cPZ-fT-lzp"/>
+                <constraint firstItem="UfO-HS-AsM" firstAttribute="top" secondItem="JSK-7W-KOO" secondAttribute="bottom" id="dLi-Fj-Zae"/>
+                <constraint firstItem="zfM-9s-dUB" firstAttribute="leading" secondItem="5qb-bX-r2w" secondAttribute="trailing" constant="10" id="dd1-ak-8lb"/>
+                <constraint firstItem="YKO-hc-4u0" firstAttribute="top" secondItem="zfM-9s-dUB" secondAttribute="bottom" constant="10" id="fdh-hX-pOA"/>
+                <constraint firstItem="qba-VU-6rA" firstAttribute="top" secondItem="zfM-9s-dUB" secondAttribute="bottom" constant="10" id="g44-ym-wva"/>
+                <constraint firstItem="zfM-9s-dUB" firstAttribute="leading" secondItem="cys-OW-oUb" secondAttribute="trailing" constant="10" id="gAJ-yA-BbV"/>
+                <constraint firstItem="m4a-Lt-Amu" firstAttribute="top" secondItem="zfM-9s-dUB" secondAttribute="bottom" constant="10" id="haQ-ey-jjP"/>
+                <constraint firstItem="zfM-9s-dUB" firstAttribute="top" secondItem="rZk-T1-QvD" secondAttribute="bottom" constant="10" id="lyq-2z-YsM"/>
+                <constraint firstItem="zfM-9s-dUB" firstAttribute="top" secondItem="Rph-B3-pVb" secondAttribute="bottom" constant="10" id="nQb-x6-h5r"/>
+                <constraint firstItem="z0V-PT-c7h" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="90" id="oni-OB-5S4"/>
+                <constraint firstItem="kqU-Z5-ZNG" firstAttribute="top" secondItem="xw6-5B-hLC" secondAttribute="bottom" constant="60" id="pCZ-Ou-hcZ"/>
+                <constraint firstItem="rZk-T1-QvD" firstAttribute="centerX" secondItem="eJC-It-Juv" secondAttribute="centerX" id="rwj-8w-9On"/>
+                <constraint firstItem="rGF-Qg-JtO" firstAttribute="top" secondItem="zfM-9s-dUB" secondAttribute="bottom" constant="10" id="sGv-vl-Vyy"/>
+                <constraint firstItem="JSK-7W-KOO" firstAttribute="leading" secondItem="zfM-9s-dUB" secondAttribute="trailing" constant="10" id="sSi-QR-ijf"/>
+                <constraint firstItem="zfM-9s-dUB" firstAttribute="leading" secondItem="kqU-Z5-ZNG" secondAttribute="trailing" constant="10" id="vkN-uz-PDr"/>
+                <constraint firstItem="qba-VU-6rA" firstAttribute="centerX" secondItem="eJC-It-Juv" secondAttribute="centerX" id="yDD-rg-zLR"/>
             </constraints>
-            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <connections>
-                <outlet property="paintImageView" destination="eJC-It-Juv" id="8kX-Td-G7a"/>
-                <outlet property="targetImageView" destination="2Sa-aD-u1D" id="S5D-FA-mnq"/>
-            </connections>
             <point key="canvasLocation" x="130.53435114503816" y="79.225352112676063"/>
         </view>
     </objects>
     <resources>
-        <image name="paint_1_image" width="500" height="500"/>
+        <image name="paint_2_image" width="500" height="500"/>
         <image name="paint_roller_bottom_ic" width="100" height="100"/>
         <image name="paint_roller_left_ic" width="100" height="100"/>
         <image name="paint_roller_right_ic" width="100" height="100"/>

@@ -33,6 +33,25 @@ class FilterModeView: UIView {
         setupView()
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        let sizeForItem = Utils.isIpad() ? 64.0 : 52.0
+        let inset = (self.frame.width - sizeForItem) / 2
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: inset, bottom: 0, right: inset)
+        collectionView.reloadData()
+
+        DispatchQueue.main.async {
+            self.collectionView.layoutIfNeeded()
+            let indexPath = IndexPath(item: 0, section: 0)
+            self.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
+
+            self.scrollViewDidScroll(self.collectionView)
+            
+            self.isFirstScroll = true
+        }
+    }
+    
     private func setupView() {
         let layout = CenterZoomFlowLayout()
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)

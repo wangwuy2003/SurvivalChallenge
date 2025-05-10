@@ -164,7 +164,7 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             }
         }
         
-        faceDetectionTimer = Timer.scheduledTimer(withTimeInterval: 8, repeats: true) { [weak self] _ in
+        faceDetectionTimer = Timer.scheduledTimer(withTimeInterval: 7, repeats: true) { [weak self] _ in
             guard let self = self, self.isActive else { return }
             
             guard let image = self.previewImageView.image,
@@ -384,6 +384,14 @@ class RankingView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
             if ((self?.isRecording) != nil) {
                 self?.startContinuousRandomization()
             }
+        }
+    }
+    
+    private func startFastInitialRandomization() {
+        stopRandomization()
+        isRandomizing = true
+        randomTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+            self?.randomizeNextImage()
         }
     }
     

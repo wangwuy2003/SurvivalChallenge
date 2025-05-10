@@ -9,10 +9,12 @@ import UIKit
 import AVKit
 
 class ResultVC: UIViewController {
-
+    
     @IBOutlet weak var videoView: UIView!
     @IBOutlet weak var shareButton: InnerShadowButton!
     @IBOutlet weak var saveButton: InnerShadowButton!
+    var isProcessingVideo = false
+    private var videoLoadingView: UIActivityIndicatorView?
     
     var videoURL: URL?
     private var player: AVPlayer?
@@ -21,12 +23,17 @@ class ResultVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
+        setupLoadingIndicator()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if let url = videoURL {
+        if isProcessingVideo {
+            videoLoadingView?.startAnimating()
+            // Check periodically for video URL
+            checkAndPlayVideo()
+        } else if let url = videoURL {
             playVideo(into: videoView, url: url)
         } else {
             print("⚠️ videoURL is nil")
@@ -84,8 +91,8 @@ class ResultVC: UIViewController {
         let okAction = UIAlertAction(
             title: Localized.Result.discard,
             style: .destructive) { [weak self] _ in
-            self?.navigationController?.popViewController(animated: true)
-        }
+                self?.navigationController?.popViewController(animated: true)
+            }
         alert.addAction(cancelAction)
         alert.addAction(okAction)
         
@@ -105,7 +112,7 @@ class ResultVC: UIViewController {
             style: .destructive) { [weak self] _ in
                 NotificationCenter.default.post(name: .didReturnToHomeFromResult, object: nil)
                 self?.navigationController?.popToRootViewController(animated: false)
-        }
+            }
         
         alert.addAction(cancelAction)
         alert.addAction(okAction)
@@ -134,6 +141,18 @@ class ResultVC: UIViewController {
         saveButton.setTitle(Localized.Result.save, for: .normal)
     }
     
+    private func checkAndPlayVideo() {
+        if !isProcessingVideo, let url = videoURL {
+            videoLoadingView?.stopAnimating()
+            playVideo(into: videoView, url: url)
+        } else if isProcessingVideo {
+            // Continue checking
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.checkAndPlayVideo()
+            }
+        }
+    }
+    
     private func playVideo(into containerView: UIView, url: URL) {
         let player = AVPlayer(url: url)
         let playerViewController = AVPlayerViewController()
@@ -147,6 +166,21 @@ class ResultVC: UIViewController {
         playerViewController.didMove(toParent: self)
         
         player.play()
+    }
+    
+    private func setupLoadingIndicator() {
+        videoLoadingView = UIActivityIndicatorView(style: .large)
+        videoLoadingView?.color = .white
+        videoLoadingView?.hidesWhenStopped = true
+        if let loadingView = videoLoadingView {
+            videoView.addSubview(loadingView)
+            loadingView.center = videoView.center
+            loadingView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                loadingView.centerXAnchor.constraint(equalTo: videoView.centerXAnchor),
+                loadingView.centerYAnchor.constraint(equalTo: videoView.centerYAnchor)
+            ])
+        }
     }
     
     deinit {
