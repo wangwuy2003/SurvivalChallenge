@@ -21,7 +21,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="yy7-zQ-81f">
-                    <rect key="frame" x="40" y="124" width="70" height="579"/>
+                    <rect key="frame" x="20" y="144" width="70" height="584"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="70" id="Q7b-M0-KrM"/>
@@ -34,37 +34,37 @@
                     </collectionViewFlowLayout>
                 </collectionView>
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="nQr-3k-W2V">
-                    <rect key="frame" x="123" y="124" width="40" height="579"/>
+                    <rect key="frame" x="103" y="144" width="40" height="584"/>
                     <subviews>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="like_ic" translatesAutoresizingMaskIntoConstraints="NO" id="bBP-ce-1DH">
-                            <rect key="frame" x="0.0" y="0.0" width="40" height="43.666666666666664"/>
+                            <rect key="frame" x="0.0" y="0.0" width="40" height="44"/>
                         </imageView>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="like_ic" translatesAutoresizingMaskIntoConstraints="NO" id="IkN-5b-C8W">
-                            <rect key="frame" x="0.0" y="59.666666666666657" width="40" height="43.333333333333343"/>
+                            <rect key="frame" x="0.0" y="60" width="40" height="44"/>
                         </imageView>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="like_ic" translatesAutoresizingMaskIntoConstraints="NO" id="ddv-vH-vuV">
-                            <rect key="frame" x="0.0" y="119.00000000000001" width="40" height="43.666666666666671"/>
+                            <rect key="frame" x="0.0" y="120" width="40" height="44"/>
                         </imageView>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="like_ic" translatesAutoresizingMaskIntoConstraints="NO" id="QH7-1K-V5G">
-                            <rect key="frame" x="0.0" y="178.66666666666669" width="40" height="43.333333333333343"/>
+                            <rect key="frame" x="0.0" y="180" width="40" height="44"/>
                         </imageView>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="like_ic" translatesAutoresizingMaskIntoConstraints="NO" id="rBH-wk-gwv">
-                            <rect key="frame" x="0.0" y="237.99999999999997" width="40" height="43.666666666666657"/>
+                            <rect key="frame" x="0.0" y="240" width="40" height="44"/>
                         </imageView>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dislike_ic" translatesAutoresizingMaskIntoConstraints="NO" id="262-Vc-mg7">
-                            <rect key="frame" x="0.0" y="297.66666666666669" width="40" height="43.333333333333314"/>
+                            <rect key="frame" x="0.0" y="300" width="40" height="44"/>
                         </imageView>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dislike_ic" translatesAutoresizingMaskIntoConstraints="NO" id="Ob1-Nr-yKF">
-                            <rect key="frame" x="0.0" y="357" width="40" height="43.666666666666686"/>
+                            <rect key="frame" x="0.0" y="360" width="40" height="44"/>
                         </imageView>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dislike_ic" translatesAutoresizingMaskIntoConstraints="NO" id="gRw-aI-uZR">
-                            <rect key="frame" x="0.0" y="416.66666666666663" width="40" height="43.333333333333314"/>
+                            <rect key="frame" x="0.0" y="420" width="40" height="44"/>
                         </imageView>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dislike_ic" translatesAutoresizingMaskIntoConstraints="NO" id="fDX-Ca-AcN">
-                            <rect key="frame" x="0.0" y="476" width="40" height="43.666666666666629"/>
+                            <rect key="frame" x="0.0" y="480" width="40" height="44"/>
                         </imageView>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dislike_ic" translatesAutoresizingMaskIntoConstraints="NO" id="3gD-h7-Zqo">
-                            <rect key="frame" x="0.0" y="535.66666666666663" width="40" height="43.333333333333371"/>
+                            <rect key="frame" x="0.0" y="540" width="40" height="44"/>
                         </imageView>
                     </subviews>
                     <constraints>
@@ -75,12 +75,12 @@
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
-                <constraint firstItem="yy7-zQ-81f" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="40" id="77q-gx-XEy"/>
-                <constraint firstItem="yy7-zQ-81f" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="65" id="Rit-zS-fIj"/>
+                <constraint firstItem="yy7-zQ-81f" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="20" id="77q-gx-XEy"/>
+                <constraint firstItem="yy7-zQ-81f" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="85" id="Rit-zS-fIj"/>
                 <constraint firstItem="nQr-3k-W2V" firstAttribute="leading" secondItem="yy7-zQ-81f" secondAttribute="trailing" constant="13" id="SrB-jf-NlP"/>
-                <constraint firstItem="nQr-3k-W2V" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="65" id="h1x-Is-JPk"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="nQr-3k-W2V" secondAttribute="bottom" constant="115" id="hI6-gg-r5g"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="yy7-zQ-81f" secondAttribute="bottom" constant="115" id="jJh-6M-LpG"/>
+                <constraint firstItem="nQr-3k-W2V" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="85" id="h1x-Is-JPk"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="nQr-3k-W2V" secondAttribute="bottom" constant="90" id="hI6-gg-r5g"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="yy7-zQ-81f" secondAttribute="bottom" constant="90" id="jJh-6M-LpG"/>
             </constraints>
             <point key="canvasLocation" x="-65.648854961832058" y="-105.63380281690141"/>
         </view>

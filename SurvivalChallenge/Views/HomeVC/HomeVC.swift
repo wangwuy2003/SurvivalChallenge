@@ -25,7 +25,7 @@ class HomeVC: UIViewController {
         }
     }
     
-    var challenges: [SurvivalChallengeEntity] = HomeViewModel.shared.allChallenges
+//    var challenges: [SurvivalChallengeEntity] = HomeViewModel.shared.allChallenges
     
     init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
@@ -185,7 +185,7 @@ extension HomeVC {
 // MARK: - Collection Viewdes
 extension HomeVC: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return challenges.count
+        return HomeViewModel.shared.filteredChallenges.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -193,13 +193,13 @@ extension HomeVC: UICollectionViewDataSource, UICollectionViewDelegate {
             return UICollectionViewCell()
         }
         
-        let challenge = HomeViewModel.shared.allChallenges[indexPath.item]
+        let challenge = HomeViewModel.shared.filteredChallenges[indexPath.item]
         cell.configureCell(model: challenge)
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let item = challenges[indexPath.item]
+        let item = HomeViewModel.shared.filteredChallenges[indexPath.item]
         
         let previewVC = PreviewVC()
         previewVC.trendItem = item

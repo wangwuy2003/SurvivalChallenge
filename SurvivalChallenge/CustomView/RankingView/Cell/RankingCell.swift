@@ -8,6 +8,12 @@
 import UIKit
 import Stevia
 
+struct RankingCellState {
+    var image: UIImage?
+    var imageURL: String?
+    var isNumberMoved: Bool
+}
+
 class RankingCell: UICollectionViewCell {
 
     @IBOutlet weak var bgImage: UIImageView!
@@ -21,6 +27,8 @@ class RankingCell: UICollectionViewCell {
         super.layoutSubviews()
         self.layer.cornerRadius = 8
         self.clipsToBounds = false
+        bgImage.layer.cornerRadius = 8
+        bgImage.layer.masksToBounds = true
     }
     
     override func prepareForReuse() {

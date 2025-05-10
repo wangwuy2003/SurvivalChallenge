@@ -15,6 +15,7 @@ import SDWebImage
 //MARK: -Initialization
 class CameraVC: UIViewController {
     //MARK: - Outlets
+    @IBOutlet weak var coloringView: ColoringView!
     @IBOutlet weak var rankingView: RankingView!
     @IBOutlet weak var guessView: GuessView!
     @IBOutlet weak var lightningButton: UIButton!
@@ -35,7 +36,6 @@ class CameraVC: UIViewController {
     private var progressView: CircularProgressView!
     
     //MARK: - Properties
-    var coloringView: ColoringView?
     var designType: DesignType?
     var filterType: FilterType?
     var currentChallenge: SurvivalChallengeEntity?
@@ -91,8 +91,12 @@ extension CameraVC {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if isInNaviStack && !isPop && filterType == .guess {
-            guessView.restoreCachedImages()
+        if isInNaviStack && !isPop {
+            if filterType == .guess {
+                guessView.restoreCachedImages()
+            } else if filterType == .ranking {
+                rankingView.restoreCachedImages()
+            }
         }
     }
     
@@ -185,6 +189,7 @@ extension CameraVC {
         resetMusicSelection()
         
         guessView.shouldKeepImagesOnReset = false
+        rankingView.shouldKeepImagesOnReset = false
         
         resetAllDetectionState()
         isInNaviStack = false
@@ -197,8 +202,6 @@ extension CameraVC {
     private func setupUI() {
         rankingView.delegate = self
         filterView.delegate = self
-        
-        setupColoringView()
         
         progressView = CircularProgressView()
         view.addSubview(progressView)
@@ -238,25 +241,6 @@ extension CameraVC {
             $0.layer.cornerRadius = 40
             $0.isUserInteractionEnabled = true
         }
-    }
-    
-    private func setupColoringView() {
-        guard coloringView == nil else { return }
-        guard let coloringView = Bundle.main.loadNibNamed("ColoringView", owner: self, options: nil)?.first as? ColoringView else {
-            print("Failed to load ColoringView")
-            return
-        }
-        self.coloringView = coloringView
-        coloringView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(coloringView)
-        
-        coloringView
-            .fillHorizontally()
-        coloringView.top(200)
-        coloringView.Bottom == filterView.Top - 10
-        
-        coloringView.isHidden = true
-        print("ColoringView initialized")
     }
     
     private func setupHandles() {
@@ -371,11 +355,11 @@ extension CameraVC {
             guessView?.isHidden = false
             guessView?.activate()
         case .coloring:
-            print("yolo Showing ColoringView")
-            coloringView?.isHidden = false
             if let designType = designType {
                 coloringView?.designType = designType
             }
+            coloringView.setPreviewSession(captureSession, isUsingFrontCamera)
+            coloringView.isHidden = false
             
         default:
             print("No valid filter type.")
@@ -390,7 +374,7 @@ extension CameraVC {
             case .guess:
                 videoComposer.setEffectType(filterType, designType: designType, view: guessView)
             case .coloring:
-                videoComposer.setEffectType(filterType, designType: designType, view: coloringView!)
+                videoComposer.setEffectType(filterType, designType: designType, view: coloringView)
             default:
                 break
             }
@@ -548,9 +532,7 @@ extension CameraVC {
                 videoComposer.setEffectType(filterType, designType: designType, view: guessView)
                 guessView.startRecording()
             case .coloring:
-                if let coloringView = coloringView {
-                    videoComposer.setEffectType(filterType, designType: designType, view: coloringView)
-                }
+                videoComposer.setEffectType(filterType, designType: designType, view: coloringView)
             default:
                 break
             }
@@ -615,6 +597,8 @@ extension CameraVC {
             self.updateTimeLabel()
         }
         
+        rankingView.startRecording()
+        
         if music != nil {
             Task { [weak self] in
                 guard let self = self else { return }
@@ -671,22 +655,36 @@ extension CameraVC {
                 }
                 Utils.removeIndicator()
                 let resultVC = ResultVC()
+                resultVC.isProcessingVideo = true
                 
                 if self.filterType == .guess {
                     self.guessView.shouldKeepImagesOnReset = true
                 }
                 
+                if self.filterType == .ranking {
+                    self.rankingView.shouldKeepImagesOnReset = true
+                }
+                
+                self.isInNaviStack = true
+                
                 
                 let selectedMusicURL = await self.getSelectedMusicURL(from: self.music)
                 if let audioURL = selectedMusicURL {
-                    VideoComposer.mergeAudioWithVideo(videoURL: videoUrl, audioURL: audioURL, completion: { finalUrl in
-                        resultVC.videoURL = finalUrl
-                    })
+                    await withCheckedContinuation { continuation in
+                        VideoComposer.mergeAudioWithVideo(videoURL: videoUrl, audioURL: audioURL) { finalUrl in
+                            resultVC.videoURL = finalUrl
+                            resultVC.isProcessingVideo = false
+                            continuation.resume()
+                        }
+                    }
                 } else {
                     resultVC.videoURL = videoUrl
+                    resultVC.isProcessingVideo = false
                 }
-                self.isInNaviStack = true
-                self.navigationController?.pushViewController(resultVC, animated: true)
+                
+                DispatchQueue.main.async {
+                    self.navigationController?.pushViewController(resultVC, animated: true)
+                }
             }
         }
     }
@@ -954,6 +952,7 @@ extension CameraVC: AVCaptureVideoDataOutputSampleBufferDelegate {
 extension CameraVC {
     @IBAction func didTapBackBtn(_ sender: Any) {
         guessView.shouldKeepImagesOnReset = false
+        rankingView.shouldKeepImagesOnReset = false
         hasMusic = false
         music = nil
         stopAudio()
@@ -983,9 +982,11 @@ extension CameraVC {
         // Update session for active view
         switch filterType {
         case .ranking:
-            rankingView?.setPreviewSession(captureSession, isUsingFrontCamera)
+            rankingView.setPreviewSession(captureSession, isUsingFrontCamera)
         case .guess:
-            guessView?.setPreviewSession(captureSession, isUsingFrontCamera)
+            guessView.setPreviewSession(captureSession, isUsingFrontCamera)
+        case .coloring:
+            coloringView.setPreviewSession(captureSession, isUsingFrontCamera)
         default:
             break
         }
@@ -1036,13 +1037,21 @@ extension CameraVC {
         let alert = UIAlertController(title: "Discard your video?", message: "", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         alert.addAction(UIAlertAction(title: "Discard", style: .destructive, handler: { _ in
-            self.progressView.discardLastSegment()
-            self.videoComposer.discardLastSegment()
+            self.progressView.discardAllSegment()
+            self.videoComposer.clearSegments()
             
-            if self.filterType == .guess {
+            switch self.filterType {
+            case .ranking:
+                self.rankingView.shouldKeepImagesOnReset = false
+                self.rankingView.resetState()
+            case .guess:
                 self.guessView.shouldKeepImagesOnReset = false
                 self.guessView.resetState()
+            default:
+                break
             }
+            
+            self.updateActiveView()
         }))
         present(alert, animated: true, completion: nil)
     }
@@ -1073,6 +1082,15 @@ extension CameraVC: FilterModeDelegate {
         self.currentChallenge = challenge
         
         if isChangingFilterType {
+            switch self.filterType {
+            case .ranking:
+                self.rankingView.resetState()
+            case .guess:
+                self.guessView.resetState()
+            default:
+                break
+            }
+            
             // Add a fade transition when changing filter types
             UIView.animate(withDuration: 0.3, animations: {
                 // Fade out current view
@@ -1121,6 +1139,8 @@ extension CameraVC: FilterModeDelegate {
                     if let designType = designType {
                         self.coloringView?.designType = designType
                     }
+//                    self.coloringView.resetToInitialState()
+                    self.coloringView.setPreviewSession(self.captureSession, self.isUsingFrontCamera)
                     self.coloringView?.isHidden = false
                     self.coloringView?.alpha = 0
                 default:
@@ -1161,9 +1181,7 @@ extension CameraVC: FilterModeDelegate {
                         case .guess:
                             self.videoComposer.setEffectType(filter, designType: self.designType, view: self.guessView)
                         case .coloring:
-                            if let coloringView = self.coloringView {
-                                self.videoComposer.setEffectType(filter, designType: self.designType, view: coloringView)
-                            }
+                            self.videoComposer.setEffectType(filter, designType: self.designType, view: self.coloringView)
                         default:
                             break
                         }
@@ -1203,9 +1221,7 @@ extension CameraVC: FilterModeDelegate {
                 case .guess:
                     videoComposer.setEffectType(filter, designType: self.designType, view: guessView)
                 case .coloring:
-                    if let coloringView = coloringView {
-                        videoComposer.setEffectType(filter, designType: self.designType, view: coloringView)
-                    }
+                    videoComposer.setEffectType(filter, designType: self.designType, view: coloringView)
                 default:
                     break
                 }

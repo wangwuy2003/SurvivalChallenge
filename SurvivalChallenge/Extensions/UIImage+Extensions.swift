@@ -43,7 +43,7 @@ extension UIImage {
         UIGraphicsEndImageContext()
         return newImage
     }
-
+    
     func resize(to newSize: CGSize) -> UIImage? {
         // Bắt đầu tạo một bitmap-based graphics context
         UIGraphicsBeginImageContextWithOptions(newSize, false, self.scale)
@@ -94,6 +94,116 @@ extension UIImage {
         
         return (resizedImage, newWidth)
     }
-
     
+//    func fillWhiteAreas(with color: UIColor) -> UIImage? {
+//        // Chuyển đổi UIImage sang CGImage
+//        guard let cgImage = self.cgImage else { return nil }
+//        
+//        let width = cgImage.width
+//        let height = cgImage.height
+//        let colorSpace = CGColorSpaceCreateDeviceRGB()
+//        let bytesPerPixel = 4
+//        let bytesPerRow = bytesPerPixel * width
+//        let bitsPerComponent = 8
+//        let bitmapInfo = CGImageAlphaInfo.premultipliedLast.rawValue
+//        
+//        // Tạo context để vẽ
+//        guard let context = CGContext(data: nil,
+//                                      width: width,
+//                                      height: height,
+//                                      bitsPerComponent: bitsPerComponent,
+//                                      bytesPerRow: bytesPerRow,
+//                                      space: colorSpace,
+//                                      bitmapInfo: bitmapInfo) else { return nil }
+//        
+//        // Vẽ hình ảnh gốc vào context
+//        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+//        
+//        // Lấy dữ liệu pixel
+//        guard let pixelData = context.data else { return nil }
+//        let data = pixelData.bindMemory(to: UInt8.self, capacity: width * height * bytesPerPixel)
+//        
+//        // Lấy các thành phần màu thay thế
+//        let components = color.cgColor.components ?? [1, 0, 0, 1] // Mặc định là đỏ nếu thất bại
+//        let r = UInt8(components[0] * 255)
+//        let g = UInt8(components[1] * 255)
+//        let b = UInt8(components[2] * 255)
+//        let a = UInt8(components[3] * 255)
+//        
+//        // Duyệt qua từng pixel và thay đổi màu nếu cần
+//        for y in 0..<height {
+//            for x in 0..<width {
+//                let pixelIndex = (width * y + x) * bytesPerPixel
+//                let red = data[pixelIndex]
+//                let green = data[pixelIndex + 1]
+//                let blue = data[pixelIndex + 2]
+//                let alpha = data[pixelIndex + 3]
+//                
+//                // Kiểm tra pixel gần trắng
+//                if red > 200 && green > 200 && blue > 200 && alpha > 0 {
+//                    data[pixelIndex] = r
+//                    data[pixelIndex + 1] = g
+//                    data[pixelIndex + 2] = b
+//                    data[pixelIndex + 3] = a
+//                }
+//            }
+//        }
+//        
+//        // Tạo và trả về hình ảnh mới
+//        guard let newCGImage = context.makeImage() else { return nil }
+//        return UIImage(cgImage: newCGImage)
+//    }
+    
+    func fillWhiteAreas(with color: UIColor) -> UIImage? {
+        guard let cgImage = self.cgImage else { return nil }
+        
+        let width = cgImage.width
+        let height = cgImage.height
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        let bytesPerPixel = 4
+        let bytesPerRow = bytesPerPixel * width
+        let bitsPerComponent = 8
+        let bitmapInfo = CGImageAlphaInfo.premultipliedLast.rawValue
+        
+        guard let context = CGContext(data: nil,
+                                      width: width,
+                                      height: height,
+                                      bitsPerComponent: bitsPerComponent,
+                                      bytesPerRow: bytesPerRow,
+                                      space: colorSpace,
+                                      bitmapInfo: bitmapInfo) else { return nil }
+        
+        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+        
+        guard let pixelData = context.data else { return nil }
+        let data = pixelData.bindMemory(to: UInt8.self, capacity: width * height * bytesPerPixel)
+        
+        let components = color.cgColor.components ?? [1, 1, 1, 1]
+        let r = UInt8(components[0] * 255)
+        let g = UInt8(components[1] * 255)
+        let b = UInt8(components[2] * 255)
+        let a = UInt8(components[3] * 255)
+        
+        for y in 0..<height {
+            for x in 0..<width {
+                let pixelIndex = (width * y + x) * bytesPerPixel
+                
+                let red = data[pixelIndex]
+                let green = data[pixelIndex + 1]
+                let blue = data[pixelIndex + 2]
+                let alpha = data[pixelIndex + 3]
+                
+                // Kiểm tra pixel có phải là màu trắng (hoặc gần trắng) và có alpha > 0
+                if red > 200 && green > 200 && blue > 200 && alpha > 0 {
+                    data[pixelIndex] = r
+                    data[pixelIndex + 1] = g
+                    data[pixelIndex + 2] = b
+                    data[pixelIndex + 3] = a
+                }
+            }
+        }
+        
+        guard let newCGImage = context.makeImage() else { return nil }
+        return UIImage(cgImage: newCGImage)
+    }
 }
