@@ -103,6 +103,8 @@ extension CameraVC {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         checkCameraPermission()
+        
+        filterView.layoutIfNeeded()
         if let currentChallenge = currentChallenge {
             if let index = challenges.firstIndex(where: { $0.id == currentChallenge.id }) {
                 filterView.scrollToItem(at: index)
@@ -533,6 +535,7 @@ extension CameraVC {
                 guessView.startRecording()
             case .coloring:
                 videoComposer.setEffectType(filterType, designType: designType, view: coloringView)
+                coloringView.startRecording()
             default:
                 break
             }
@@ -1034,26 +1037,38 @@ extension CameraVC {
     }
     
     @IBAction func didTapDiscardBtn(_ sender: Any) {
-        let alert = UIAlertController(title: "Discard your video?", message: "", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        alert.addAction(UIAlertAction(title: "Discard", style: .destructive, handler: { _ in
-            self.progressView.discardAllSegment()
-            self.videoComposer.clearSegments()
+        DispatchQueue.main.async {
+            let alert = UIAlertController(
+                title: Localized.Camera.discardTheLastClip,
+                message: "",
+                preferredStyle: .alert)
+            alert.addAction(UIAlertAction(
+                title: Localized.Camera.cancel,
+                style: .cancel,
+                handler: nil))
+            alert.addAction(UIAlertAction(
+                title: Localized.Camera.discard,
+                style: .destructive,
+                handler: { _ in
+                    self.progressView.discardLastSegment()
+                    self.videoComposer.discardLastSegment()
+                    
+                    switch self.filterType {
+                    case .ranking:
+                        self.rankingView.shouldKeepImagesOnReset = false
+                        self.rankingView.resetState()
+                    case .guess:
+                        self.guessView.shouldKeepImagesOnReset = false
+                        self.guessView.resetState()
+                    default:
+                        break
+                    }
+                    
+                    self.updateActiveView()
+                }))
             
-            switch self.filterType {
-            case .ranking:
-                self.rankingView.shouldKeepImagesOnReset = false
-                self.rankingView.resetState()
-            case .guess:
-                self.guessView.shouldKeepImagesOnReset = false
-                self.guessView.resetState()
-            default:
-                break
-            }
-            
-            self.updateActiveView()
-        }))
-        present(alert, animated: true, completion: nil)
+            self.present(alert, animated: true, completion: nil)
+        }
     }
     
     @IBAction func didTapCloseMusicBtn(_ sender: Any) {
