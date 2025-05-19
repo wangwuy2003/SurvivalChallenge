@@ -50,6 +50,10 @@ enum Localized {
     enum Camera {
         static let addMusic = "addMusic".localized
         static let progressReachedTheLimit = "progressReachedTheLimit".localized
+        static let discardYourVideo = "discardYourVideo".localized
+        static let discardTheLastClip = "discardTheLastClip".localized
+        static let cancel = "cancel".localized
+        static let discard = "discard".localized
     }
     
     enum DescriptionChallenge {

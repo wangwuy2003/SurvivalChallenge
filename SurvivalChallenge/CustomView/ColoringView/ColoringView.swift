@@ -50,6 +50,7 @@ class ColoringView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     private var partOrder: [String] = []
     private var buttonColors: [UIColor] = []
     private var isAnimating = false
+    private var isRecording = false
     
     // Camera
     private var session: AVCaptureSession?
@@ -147,7 +148,7 @@ class ColoringView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     // MARK: - Paint button tapped
     @objc private func buttonTapped(_ sender: UIButton) {
-        guard !isAnimating else { return }
+        guard !isAnimating && isRecording else { return }
             
             var colorIndex: Int
             
@@ -348,6 +349,19 @@ class ColoringView: UIView, AVCaptureVideoDataOutputSampleBufferDelegate {
         
         // Hiện lại tất cả button của filter type hiện tại
         setupButtons()
+    }
+    
+    // MARK: - Recording State
+    func setRecordingState(_ isRecording: Bool) {
+        self.isRecording = isRecording
+    }
+    
+    func startRecording() {
+        isRecording = true
+    }
+    
+    func stopRecording() {
+        isRecording = false
     }
 }
 
